@@ -1,66 +1,98 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Col, Well, FormGroup, InputGroup, FormControl, Glyphicon } from 'react-bootstrap';
+import { Grid, Row, Col, Well, FormGroup, InputGroup, FormControl } from 'react-bootstrap';
 
-import { partialRight, values, map, isNull, toPairs } from 'lodash';
+import { values, map, isNull, toPairs, fromPairs,
+         memoize, zipObject, property, flowRight } from 'lodash';
 import vl from 'vega-lite';
 import vg from 'vega';
+import vegaEmbed from 'vega-embed';
 
-import * as bleh from 'vega-embed';
+import { setSpecField, setMarkType } from '../redux/reducers/chartSpec';
+import { toVegaShorthand, normalizeFieldName, shortHandToVegaLite } from '../lib/vega-utils';
 
-import { setSpecField } from '../redux/reducers/chartSpec';
+import '../css/ChartContainer.css';
 
-const POSITIONAL = ['x', 'y', 'row', 'column'];
-const MARKS = ['size', 'color', 'shape', 'detail', 'text'];
-
-function VariableSelect(props) {
+function variableSelect(props) {
     return (
         <FormGroup>
             <InputGroup>
                 <InputGroup.Addon>{props.field}</InputGroup.Addon>
                 <FormControl componentClass="select" placeholder="select" onChange={props.onChange}>
-                    <option value=""></option>
-                    {props.dimensions.map((v,i) => <option key={i} value={v.name}>{v.caption}</option>)}
-                    {props.measures.map((v,i) => <option key={i} value={v.name}>{v.caption}</option>)}
+                    <option></option>
+                    {props.dimensions.map((v,i) => <option key={i} value={'drillDown--'+v.name}>{v.hierarchy.dimension.caption } / {v.caption} (N)</option>)}
+                    {props.measures.map((v,i) => <option key={i} value={'measure--'+v.name}>{v.caption} (#)</option>)}
                 </FormControl>
             </InputGroup>
         </FormGroup>
     );
-
 };
 
 class _ChartSpecForm extends Component {
 
-    onFieldSelectorChange(event, field) {
-        this.props.dispatch(setSpecField(field, event.target.value))
+    static markTypes = [
+        'point', 'circle', 'square', 'text', 'tick', 'bar', 'line', 'area'
+    ];
+
+    static positionalChannels = [
+        'x', 'y', 'row', 'column'
+    ];
+
+    static markChannels = [
+        'size', 'color', 'shape', 'detail', 'text'
+    ];
+
+    onFieldSelectorChange(field, variable, variableType) {
+        this.props.dispatch(setSpecField(field, variable, variableType))
     }
 
     render() {
-        const agg = this.props.currentAggregation;
+        const agg = this.props.currentAggregation,
+              fields = {
+                  drillDown: fromPairs(map((agg.drillDowns || []).map(d => [d.name, d]))),
+                  measure: agg.measures || {}
+              };
+
         return (
             <Well>
-                <h4>Positional</h4>
+                <h5>Positional</h5>
                 {
-                    POSITIONAL.map((p,i) =>
-                        VariableSelect({
+                    _ChartSpecForm.positionalChannels.map((p,i) =>
+                        variableSelect({
                             key: i,
                             field: p,
                             dimensions: agg.drillDowns || [],
                             measures: values(agg.measures) || [],
-                            onChange: partialRight(this.onFieldSelectorChange, p).bind(this)
+                            onChange: e => {
+                                const d = e.target.value.split('--');
+                                this.onFieldSelectorChange(p, fields[d[0]][d[1]], d[0]);
+                            }
                         })
                     )
                 }
 
-                <h4>Marks</h4>
+                <div className="markSelectorContainer">
+                    <h5>Marks</h5>
+                    <select onChange={e => this.props.dispatch(setMarkType(e.target.value))}>
+                        {
+                            _ChartSpecForm.markTypes.map((mt,i) =>
+                                <option key={i} value={mt}>{mt}</option>
+                            )
+                        }
+                    </select>
+                </div>
                 {
-                    MARKS.map((p,i) => (
-                        VariableSelect({
+                    _ChartSpecForm.markChannels.map((p,i) => (
+                        variableSelect({
                             key: i,
                             field: p,
                             dimensions: agg.drillDowns || [],
                             measures: values(agg.measures) || [],
-                            onChange: partialRight(this.onFieldSelectorChange, p).bind(this)
+                            onChange: e => {
+                                console.log('VALUE', e.target.value);
+                                const d = e.target.value.split('--');
+                                this.onFieldSelectorChange(p, fields[d[0]][d[1]], d[0]);
+                            }
                         })
                     ))
                 }
@@ -75,53 +107,103 @@ const ChartSpecForm = connect(state => ({
     currentAggregation: state.aggregation
 }))(_ChartSpecForm);
 
-function Chart(props) {
+const transformForVega = (tidyData) => {
+    const keys = tidyData.axes.map(flowRight(normalizeFieldName, property('level')))
+                         .concat(tidyData.measures.map(flowRight(normalizeFieldName, property('name')))),
+          nDrilldowns = tidyData.axes.length;
+    return tidyData.data.map(
+        (d) =>
+            zipObject(keys,
+                      d.slice(0,nDrilldowns).map(property('caption'))
+                       .concat(d.slice(nDrilldowns)))
+    );
+};
 
-    function toVegaLiteSpec() {
+
+class Chart extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = { // yes, stateful.
+            vis: null
+        }
+    }
+
+    // generate a 'shorthand' vega-lite spec and return a vega-lite spec.
+    toVegaLiteSpec() {
         // mark=point|x=Horsepower,Q|y=Acceleration,Q|shape=bin_Weight_in_lbs,Q|color=Origin,N
-        const spec = props.spec || {},
-              sh = map(_.filter(toPairs(spec), v => !isNull(v[1])),
-                       (v) => `${v[0]}=${v[1]},Q`).join('|');
-
-
+        const spec = this.props.spec || {},
+              sh = map(toPairs(spec).filter(v => v[0] !== 'mark' && !isNull(v[1])),
+                       (v) => `${v[0]}=${normalizeFieldName(v[1].name)},${v[1].variableType === 'drillDown' ? 'N' : 'Q'}`
+              ).join('|');
         return sh !== '' ? vl.shorthand.parse('mark=point|' + sh) : '';
     }
 
-    const vls = toVegaLiteSpec();
-    let vegaContainer;
+    updateChart() {
+        let vls = shortHandToVegaLite(toVegaShorthand(this.props.spec));
 
-    console.log("88888", bleh);
+        // bail early if we can't generate a valid VL Spec
+        if (vls === '') {
+            return
+        }
 
-    if (vls !== '') {
-        vl.parse.spec(vls,
-                      chart => {
+        vls = {
+            ...vls,
+            config: {
+                cell: {
+                    width: 400,
+                    height: 400
+                },
+                facet: {
+                    cell: {
+                        width: 400,
+                        height: 200
+                    }
+                }
+            },
+            mark: this.props.spec.mark,
+            data: {
+                values: transformForVega(this.props.aggregation.data.tidy())
+            }
+        };
 
-                      })
+        const vegaSpec = vl.compile(vls);
+
+        vegaEmbed(this._vegaContainer,
+                  vegaSpec);
+
     }
-    return (
-        <div ref={(c) => vegaContainer = c}>
-        </div>
-    );
 
-}
-
-class _ChartContainer extends Component {
+    componentDidUpdate() {
+        this.updateChart();
+    }
 
     render() {
         return (
-            <div>
-                <Col md={2}><ChartSpecForm /></Col>
-                <Col md={10}><Chart data={[]} spec={this.props.chartSpec} /></Col>
+            <div ref={(c) => this._vegaContainer = c}>
             </div>
+        );
+    }
+}
+
+class _ChartContainer extends Component {
+    render() {
+        return (
+            <Grid>
+                <Row>
+                    <Col md={3}><ChartSpecForm /></Col>
+                    <Col md={9}><Chart aggregation={this.props.currentAggregation} spec={this.props.chartSpec} /></Col>
+                </Row>
+            </Grid>
 
         );
     }
 }
 
-
 export const ChartContainer = connect((state) => (
     {
         currentCube: state.cubes.currentCube,
+        currentAggregation: state.aggregation,
         chartSpec: state.chartSpec
     }
 ))(_ChartContainer);

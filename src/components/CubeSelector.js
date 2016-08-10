@@ -21,6 +21,7 @@ class CubeSelector extends Component {
             <FormControl componentClass="select"
                          placeholder="select"
                          onChange={this.onChange.bind(this)}>
+                <option value={''} disabled selected>Select cube…</option>
                 {this.props.cubes.map(c => <option key={c.name}>{c.name}</option>)}
             </FormControl>
         );

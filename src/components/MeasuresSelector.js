@@ -17,7 +17,6 @@ class MeasuresSelector extends Component {
         return (
             // <select onChange={this.onChange.bind(this)}>
             <FormGroup>
-                <br /><br /><br /><br /><br /><br />
                 {measures.map((m,i) =>
                     <Checkbox checked={m.name in this.props.selectedMeasures} key={i} onChange={partialRight(this.onChange, m).bind(this)} inline>{m.caption}</Checkbox>
                  )}

@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Table } from 'react-bootstrap';
+import { Grid, Row, Col, Table, Pagination, DropdownButton, MenuItem, Glyphicon } from 'react-bootstrap';
 
+import { PAGE_SIZE } from '../settings';
+import { setPage } from '../redux/reducers/dataTable';
 
 class DataTable extends Component{
     static contextTypes = {
@@ -13,35 +15,76 @@ class DataTable extends Component{
         let c;
 
         if (!aggregation) {
-            c = <p>No Data</p>;
+            c = (
+                <Grid>
+                    <Row>
+                        <Col md={12}><p>No Data</p></Col>
+                    </Row>
+                </Grid>
+            );
         }
         else {
             const agg = aggregation.tidy();
             const cntDims = agg.axes.length;
+            const activePage = this.props.dataTable.page;
+            const pager = (agg.data.length > PAGE_SIZE ) ?
+                          <Pagination
+                              ellipsis
+                              boundaryLinks
+                              maxButtons={5}
+                              bsSize="small"
+                              items={Math.floor(agg.data.length / PAGE_SIZE) }
+                              activePage={activePage}
+                              onSelect={(eventKey) => this.props.dispatch(setPage(eventKey)) } /> : null;
+
+            console.log('AASDFASDF', aggregation);
+
             c = (
-                <Table responsive striped bordered condensed hover>
-                    <thead>
-                        <tr>
-                            {agg.axes.map((a,i) => <th key={i}>{a.caption}</th>)}
-                            {agg.measures.map((m,i) => <th key={i}>{m.caption}</th>)}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {agg.data.map((row, i) => (
-                             <tr key={i}>
-                                 {row.map((cell, j) => <td key={j}>{j < cntDims ? cell.caption : cell}</td>)}
-                             </tr>
-                         ))}
-                    </tbody>
-                </Table>
+                <Grid>
+                    <Row>
+                        <Col md={10}>
+                            {pager}
+                        </Col>
+                        <Col md={1} mdOffset={1} style={{textAlign: 'right'}}>
+                            <DropdownButton title={<Glyphicon glyph="download" />} bsStyle="link">
+                                <MenuItem eventKey="1" href={aggregation.url.replace('/aggregate', '/aggregate.csv')}>CSV</MenuItem>
+                                <MenuItem eventKey="2" href={aggregation.url.replace('/aggregate', '/aggregate.xls')}>Excel</MenuItem>
+                            </DropdownButton>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col md={12}>
+                            <Table responsive striped bordered condensed hover>
+                                <thead>
+                                    <tr>
+                                        {agg.axes.map((a,i) => <th key={i}>{a.caption}</th>)}
+                                        {agg.measures.map((m,i) => <th key={i}>{m.caption}</th>)}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {agg.data.slice((activePage - 1) * PAGE_SIZE,
+                                                    (activePage - 1) * PAGE_SIZE + PAGE_SIZE)
+                                        .map((row, i) => (
+                                            <tr key={i}>
+                                                {row.map((cell, j) => <td key={j}>{j < cntDims ? cell.caption : cell}</td>)}
+                                            </tr>
+                                        ))}
+                                </tbody>
+                            </Table>
+                        </Col>
+
+                    </Row>
+                </Grid>
             );
         }
-        return <div>{c}</div>;
+
+        return c;
     }
 }
 
 export default connect(state => (
     {
-        aggregation: state.aggregation.data
+        aggregation: state.aggregation.data,
+        dataTable: state.dataTable
     }
 ))(DataTable)

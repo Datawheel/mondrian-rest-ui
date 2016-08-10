@@ -1,4 +1,4 @@
-import { fromPairs, omit, map } from 'lodash';
+import { fromPairs, omit, map, compact } from 'lodash';
 
 import * as client from '../../lib/mondrian-client.js';
 
@@ -70,11 +70,17 @@ export default function reducer(state = initialState, action={}) {
 }
 
 function clientCall(dispatch, getState) {
-    const state = getState();
+    const state = getState(),
+          dds = compact(state.aggregation.drillDowns);
+
+    if (dds.length === 0) {
+        return null;
+    }
 
     dispatch({
         type: AGGREGATION_LOADING
     });
+
     return client.getAggregation(state.cubes.currentCube,
                                  {
                                      drilldown: state.aggregation.drillDowns,

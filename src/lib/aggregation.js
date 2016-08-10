@@ -1,7 +1,5 @@
 import _ from 'lodash';
 
-const GROUPSEP = '#~#';
-
 // from http://phrogz.net/lazy-cartesian-product
 // XXX convert it into an ES6 generator funcion
 function lazyProduct(sets,f,context){
@@ -91,31 +89,6 @@ export default class Aggregation {
      */
     tidy() {
         return tidyResponse(this);
-    }
-
-    rolledUp() {
-        // if (this._rolledUp) return this._rolledUp;
-        const tidy = this.tidy();
-        const datesByKey = _.keyBy(this.axes[2].members, _.property('key'));
-        return {
-            axes: this.axis_dimensions.slice(1),
-            measures: this.axes[0].members,
-            data: _.map(
-                _.groupBy(tidy.data,
-                          (d) => `${d[0].parent_name}${GROUPSEP}${d[1].key}`),
-                (v, groupKey) => {
-                    const [ parentKey, dateKey ] = groupKey.split(GROUPSEP);
-                    const rv = [
-                        this.axis_parents[1][parentKey],
-                        datesByKey[dateKey]
-                    ];
-                    // rollup all measures
-                    return rv.concat(_.range(2,
-                                             tidy.measures.length + 2).
-                                     map(i => _.sumBy(v, d => d[i])));
-                }
-            )
-        };
     }
 
     // filter by `filterAxis` and sort on measure
