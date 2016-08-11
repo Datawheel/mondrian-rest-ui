@@ -1,4 +1,4 @@
-const PAGE_SET = 'mondrian/dataTable/SPEC_FIELD_SET';
+const PAGE_SET = 'mondrian/dataTable/PAGE_SET';
 
 const initialState = {
     page: 1
