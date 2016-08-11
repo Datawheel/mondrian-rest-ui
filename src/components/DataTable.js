@@ -37,8 +37,6 @@ class DataTable extends Component{
                               activePage={activePage}
                               onSelect={(eventKey) => this.props.dispatch(setPage(eventKey)) } /> : null;
 
-            console.log('AASDFASDF', aggregation);
-
             c = (
                 <Grid>
                     <Row>
@@ -46,7 +44,7 @@ class DataTable extends Component{
                             {pager}
                         </Col>
                         <Col md={1} mdOffset={1} style={{textAlign: 'right'}}>
-                            <DropdownButton title={<Glyphicon glyph="download" />} bsStyle="link">
+                            <DropdownButton bsSize="large" title={<Glyphicon glyph="download"/>} bsStyle="link">
                                 <MenuItem eventKey="1" href={aggregation.url.replace('/aggregate', '/aggregate.csv')}>CSV</MenuItem>
                                 <MenuItem eventKey="2" href={aggregation.url.replace('/aggregate', '/aggregate.xls')}>Excel</MenuItem>
                             </DropdownButton>
@@ -72,7 +70,11 @@ class DataTable extends Component{
                                 </tbody>
                             </Table>
                         </Col>
-
+                    </Row>
+                    <Row>
+                        <Col md={12}>
+                            {pager}
+                        </Col>
                     </Row>
                 </Grid>
             );
