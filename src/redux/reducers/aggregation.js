@@ -17,6 +17,7 @@ const initialState = {
     measures: {}
 };
 
+
 export default function reducer(state = initialState, action={}) {
     switch(action.type) {
         case DRILLDOWN_ADDED:
@@ -88,13 +89,17 @@ function clientCall(dispatch, getState) {
                                      measures: map(state.aggregation.measures),
                                      nonempty: true
                                  })
-                 .then(data => {
+                 .then(data =>
                      dispatch({
                          type: AGGREGATION_LOADED,
                          aggregation: data
-                     });
-                 })
+                     })
+                 )
                  .catch(err => {
+                     dispatch({
+                         type: AGGREGATION_FAIL,
+                         error: err
+                     })
                      // TODO: undo optimistic add
                  });
 };

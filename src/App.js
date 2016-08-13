@@ -63,7 +63,7 @@ class App extends Component {
                     </Row>
                     <Row>
                         <Col md={12}>
-                            <Tabs defaultActiveKey={1} id="tabs">
+                            <Tabs defaultActiveKey={1} id="tabs" animation={false}>
                                 <Tab eventKey={1} title="Data">
                                     <DataTable />
                                 </Tab>

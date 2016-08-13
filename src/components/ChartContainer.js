@@ -2,10 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Grid, Row, Col, Well, FormGroup, InputGroup, FormControl } from 'react-bootstrap';
 
-import { values, map, isNull, toPairs, fromPairs,
-         memoize, zipObject, property, flowRight } from 'lodash';
+import { values, map, fromPairs,
+         zipObject, property, flowRight } from 'lodash';
 import vl from 'vega-lite';
-import vg from 'vega';
 import vegaEmbed from 'vega-embed';
 
 import { setSpecField, setMarkType } from '../redux/reducers/chartSpec';
@@ -129,16 +128,6 @@ class Chart extends Component {
         }
     }
 
-    // generate a 'shorthand' vega-lite spec and return a vega-lite spec.
-    toVegaLiteSpec() {
-        // mark=point|x=Horsepower,Q|y=Acceleration,Q|shape=bin_Weight_in_lbs,Q|color=Origin,N
-        const spec = this.props.spec || {},
-              sh = map(toPairs(spec).filter(v => v[0] !== 'mark' && !isNull(v[1])),
-                       (v) => `${v[0]}=${normalizeFieldName(v[1].name)},${v[1].variableType === 'drillDown' ? 'N' : 'Q'}`
-              ).join('|');
-        return sh !== '' ? vl.shorthand.parse('mark=point|' + sh) : '';
-    }
-
     updateChart() {
         let vls = shortHandToVegaLite(toVegaShorthand(this.props.spec));
 
@@ -169,8 +158,13 @@ class Chart extends Component {
 
         const vegaSpec = vl.compile(vls);
 
+
+
         vegaEmbed(this._vegaContainer,
-                  vegaSpec);
+                  {
+                      mode: 'vega-lite',
+                      spec: vls
+                  });
 
     }
 
@@ -190,6 +184,7 @@ class _ChartContainer extends Component {
     render() {
         return (
             <Grid>
+                <br />
                 <Row>
                     <Col md={3}><ChartSpecForm /></Col>
                     <Col md={9}><Chart aggregation={this.props.currentAggregation} spec={this.props.chartSpec} /></Col>

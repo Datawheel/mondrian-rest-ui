@@ -90,12 +90,4 @@ export default class Aggregation {
     tidy() {
         return tidyResponse(this);
     }
-
-    // filter by `filterAxis` and sort on measure
-    topBy(filter, filterAxis, measureIndex) {
-        const midx = _.isUndefined(measureIndex) ? 2 : measureIndex;
-        return _.sortBy(this.tidy().filter((m) => m[filterAxis].key === filter.key),
-                        (m) => -m[midx]);
-    }
-
 }

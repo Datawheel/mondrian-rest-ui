@@ -1,0 +1,13 @@
+table.table thead th {
+  border-bottom-style: double;
+  border-bottom-width: 3px;
+}
+
+
+.measureCell {
+  text-align: right;
+}
+
+td.measureCell {
+  font-family: "Nova Mono", monospace;
+}

@@ -40,7 +40,7 @@ export default class Cube {
         if (this._dimensionsByName[dimensionName])
             return this._dimensionsByName[dimensionName];
 
-        const dim = _.find(this.standardDimensions(), d => d.name == dimensionName);
+        const dim = _.find(this.standardDimensions(), d => d.name === dimensionName);
         if (_.isUndefined(dim)) {
             throw new Error(`Dimension ${dimensionName} does not exist in cube ${this.name}`);
         }
@@ -49,7 +49,7 @@ export default class Cube {
     }
 
     findMeasure(measureFullName) {
-        const measure = _.find(this.measures, m => m.full_name == measureFullName);
+        const measure = _.find(this.measures, m => m.full_name === measureFullName);
         if (_.isUndefined(measure)) {
             throw new Error(`Measure ${measureFullName} does not exist in cube ${this.name}`);
         }

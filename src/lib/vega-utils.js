@@ -1,6 +1,5 @@
 import { map, toPairs, isNull, memoize } from 'lodash';
 import vl from 'vega-lite';
-import vg from 'vega';
 
 export const normalizeFieldName = memoize((fn) => fn.replace(' ', '_'));
 

@@ -5,6 +5,8 @@ import { Grid, Row, Col, Table, Pagination, DropdownButton, MenuItem, Glyphicon 
 import { PAGE_SIZE } from '../settings';
 import { setPage } from '../redux/reducers/dataTable';
 
+import '../css/DataTable.css';
+
 class DataTable extends Component{
     static contextTypes = {
         store: React.PropTypes.object.isRequired
@@ -56,7 +58,7 @@ class DataTable extends Component{
                                 <thead>
                                     <tr>
                                         {agg.axes.map((a,i) => <th key={i}>{a.caption}</th>)}
-                                        {agg.measures.map((m,i) => <th key={i}>{m.caption}</th>)}
+                                        {agg.measures.map((m,i) => <th className="measureCell" key={i}>{m.caption}</th>)}
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -64,7 +66,12 @@ class DataTable extends Component{
                                                     (activePage - 1) * PAGE_SIZE + PAGE_SIZE)
                                         .map((row, i) => (
                                             <tr key={i}>
-                                                {row.map((cell, j) => <td key={j}>{j < cntDims ? cell.caption : cell}</td>)}
+                                                {
+                                                    row.map((cell, j) =>
+                                                        <td key={j} className={j >= cntDims ? 'measureCell' : ''}>
+                                                            {j < cntDims ? cell.caption : cell}
+                                                        </td>)
+                                                }
                                             </tr>
                                         ))}
                                 </tbody>

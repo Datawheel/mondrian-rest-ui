@@ -6,3 +6,10 @@
     align-content: center;
     align-items: center;
 }
+
+.vega-actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+}
