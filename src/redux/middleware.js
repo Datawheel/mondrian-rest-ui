@@ -6,7 +6,7 @@ const methods = ['get', 'post', 'put', 'patch', 'del'];
 
 class ApiFetcher2 {
     constructor() {
-        methods.forEach((method) =>
+        methods.forEach((method) => // eslint-disable-line no-return-assign
             // eslint-disable-next-line
             this[method] = (path, { params, data } = {}) => {
                             let opts = { method: method };

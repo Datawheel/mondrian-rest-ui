@@ -19,7 +19,8 @@
     "url-join": "^1.1.0",
     "vega": "^2.6.1",
     "vega-embed": "^2.2.0",
-    "vega-lite": "^1.1.1"
+    "vega-lite": "^1.1.1",
+    "vega-tooltip": "git+https://github.com/vega/vega-tooltip.git"
   },
   "peerDependencies": {
     "redux": "^3.0.0"

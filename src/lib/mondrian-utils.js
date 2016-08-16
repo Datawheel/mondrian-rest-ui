@@ -15,7 +15,7 @@ export function levelFullName(dimension, levelDepth) {
 const FN_RE = /\[([^\]]+)\]/g;
 export function fullNameToURL(fn) {
     let m, parts = [];
-    while ((m = FN_RE.exec(fn)) !== null) {
+    while ((m = FN_RE.exec(fn)) !== null) { // eslint-disable-line no-cond-assign
         if (m.index === FN_RE.lastIndex) {
             FN_RE.lastIndex++;
         }
@@ -45,7 +45,8 @@ export function aggregationQS(params) {
         cut: params.cut,
         nonempty: params.nonempty ? 'true' : 'false',
         distinct: params.distinct ? 'true' : 'false',
-        parents: params.parents ? 'true' : 'false'
+        parents: params.parents ? 'true' : 'false',
+        debug: 'true' // TODO: debug enabled by default
     };
     return formurlencoded(o);
 }

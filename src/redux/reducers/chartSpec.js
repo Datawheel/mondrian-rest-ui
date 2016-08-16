@@ -16,6 +16,11 @@ const initialState = {
     mark: 'point'
 };
 
+const VT_TO_VEGAVT = {
+    measure: 'quantitative',
+    drillDown: 'nominal'
+}
+
 export default function reducer(state = initialState, action={}) {
     switch(action.type) {
         case SPEC_FIELD_SET:
@@ -24,7 +29,11 @@ export default function reducer(state = initialState, action={}) {
                                  fromPairs([
                                      [
                                          action.key,
-                                         {...action.variable, variableType: action.variableType}
+                                         {
+                                             ...action.variable,
+                                             variableType: action.variableType,
+                                             vegaVariableType: VT_TO_VEGAVT[action.variableType]
+                                         }
                                      ]
                                  ]));
         case MARK_TYPE_SET:

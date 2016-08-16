@@ -1,21 +1,110 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Grid, Row, Col, Well, FormGroup, InputGroup, FormControl } from 'react-bootstrap';
+import { Grid, Row, Col, Well, FormGroup, InputGroup, FormControl, Glyphicon } from 'react-bootstrap';
 
-import { values, map, fromPairs,
-         zipObject, property, flowRight } from 'lodash';
-import vl from 'vega-lite';
+import { values, map, fromPairs, keys } from 'lodash';
+import vegaLite from 'vega-lite';
 import vegaEmbed from 'vega-embed';
+import vegaTooltip from 'vega-tooltip';
+import dl from 'datalib';
+
+// vega-tooltip needs datalib in the global scope
+if (window) window.dl = dl;
 
 import { setSpecField, setMarkType } from '../redux/reducers/chartSpec';
-import { toVegaShorthand, normalizeFieldName, shortHandToVegaLite } from '../lib/vega-utils';
+import { toVegaShorthand, shortHandToVegaLite, transformForVega } from '../lib/vega-utils';
 
 import '../css/ChartContainer.css';
 
-function variableSelect(props) {
+const FIELD_TYPES_FUNCS = {
+    quantitative: [
+        '', 'bin',
+        'min', 'max',
+        'mean', 'median',
+        'sum', 'valid', 'missing',
+        'distinct', 'modeskew',
+        'q1', 'q3',
+        'stdev', 'stdevp',
+        'variance', 'variancep'
+    ],
+    temporal: [
+        '', 'year',
+        'quarter', 'month',
+        'date','day',
+        'hours', 'minutes',
+        'seconds', 'milliseconds',
+        'yearmonthdate', 'yearquarter',
+        'yearmonth', 'yearmonthdatehours',
+        'yearmonthdatehoursminutes',
+        'yearmonthdatehoursminutesseconds',
+        'hoursminutes', 'hoursminutesseconds',
+        'minutesseconds', 'secondsmilliseconds'
+    ],
+    ordinal: null,
+    nominal: null
+};
+
+
+// small panel that appears onmouseover
+function FieldOptions(props, context) {
+    const { dispatch } = context.store;
+    const disabled = !props.fieldSpec;
+    const functions = props.fieldSpec ? FIELD_TYPES_FUNCS[props.fieldSpec.vegaVariableType] : null;
+
+    let funcSelector = null;
+
+    if (functions) {
+        funcSelector = (
+            <div>
+                <strong>function</strong>
+                <br />
+                <select onChange={ (e) =>
+                    dispatch(setSpecField(props.field,
+                                          {
+                                              ...props.fieldSpec,
+                                              vegaFunction: e.target.value
+                                          },
+                                          props.fieldSpec.variableType)) }>
+                    { functions.map((f,i) => <option key={i} value={f}>{f}</option>) }
+                </select>
+            </div>
+        );
+    }
+
+    return (
+        <InputGroup.Addon
+           style={
+               {
+                   padding: 0,
+                   paddingRight: '5px',
+                   pointerEvents: disabled ? 'none' : 'all',
+                   opacity: disabled ? 0.1 : 1
+               }}
+           className="fieldOptionsButton">
+            <Glyphicon glyph="option-vertical" />
+            <div className="fieldOptions">
+                <strong>type</strong>
+                <br />
+                <select value={props.fieldSpec ? props.fieldSpec.vegaVariableType : null}>
+                    {keys(FIELD_TYPES_FUNCS).map((ft, i) => <option key={i} value={ft}>{ft}</option>)}
+                </select>
+                <br />
+                {funcSelector}
+            </div>
+        </InputGroup.Addon>
+    );
+}
+
+FieldOptions.contextTypes = {
+    store: React.PropTypes.object.isRequired
+};
+
+
+function VariableSelect(props) {
     return (
         <FormGroup>
-            <InputGroup>
+            <InputGroup className="fieldOptionsContainer">
+                <FieldOptions field={props.field} fieldSpec={props.fieldSpec} />
                 <InputGroup.Addon>{props.field}</InputGroup.Addon>
                 <FormControl componentClass="select" placeholder="select" onChange={props.onChange}>
                     <option></option>
@@ -47,6 +136,7 @@ class _ChartSpecForm extends Component {
 
     render() {
         const agg = this.props.currentAggregation,
+              chartSpec = this.props.chartSpec || {},
               fields = {
                   drillDown: fromPairs(map((agg.drillDowns || []).map(d => [d.name, d]))),
                   measure: agg.measures || {}
@@ -57,42 +147,38 @@ class _ChartSpecForm extends Component {
                 <h5>Positional</h5>
                 {
                     _ChartSpecForm.positionalChannels.map((p,i) =>
-                        variableSelect({
-                            key: i,
-                            field: p,
-                            dimensions: agg.drillDowns || [],
-                            measures: values(agg.measures) || [],
-                            onChange: e => {
-                                const d = e.target.value.split('--');
-                                this.onFieldSelectorChange(p, fields[d[0]][d[1]], d[0]);
-                            }
-                        })
+                        <VariableSelect key={i}
+                                        field={p}
+                                        fieldSpec={chartSpec[p]} dimensions={agg.drillDowns || []}
+                                        measures={values(agg.measures) || []}
+                                        onChange={(e) => {
+                                                const d = e.target.value.split('--');
+                                                this.onFieldSelectorChange(p, fields[d[0]][d[1]], d[0]);
+                                            }} />
                     )
                 }
 
-                <div className="markSelectorContainer">
-                    <h5>Marks</h5>
-                    <select onChange={e => this.props.dispatch(setMarkType(e.target.value))}>
+                        <div className="markSelectorContainer">
+                            <h5>Marks</h5>
+                            <select onChange={e => this.props.dispatch(setMarkType(e.target.value))}>
+                                {
+                                    _ChartSpecForm.markTypes.map((mt,i) =>
+                                        <option key={i} value={mt}>{mt}</option>
+                                    )
+                                }
+                            </select>
+                        </div>
                         {
-                            _ChartSpecForm.markTypes.map((mt,i) =>
-                                <option key={i} value={mt}>{mt}</option>
-                            )
-                        }
-                    </select>
-                </div>
-                {
-                    _ChartSpecForm.markChannels.map((p,i) => (
-                        variableSelect({
-                            key: i,
-                            field: p,
-                            dimensions: agg.drillDowns || [],
-                            measures: values(agg.measures) || [],
-                            onChange: e => {
-                                console.log('VALUE', e.target.value);
-                                const d = e.target.value.split('--');
-                                this.onFieldSelectorChange(p, fields[d[0]][d[1]], d[0]);
-                            }
-                        })
+                            _ChartSpecForm.markChannels.map((p,i) => (
+                                <VariableSelect key={i}
+                                                field={p}
+                                                fieldSpec={chartSpec[p]} dimensions={agg.drillDowns || []}
+                                                measures={values(agg.measures) || []}
+                                                onChange={(e) => {
+                                                        const d = e.target.value.split('--');
+                                                        this.onFieldSelectorChange(p, fields[d[0]][d[1]], d[0]);
+                                                    }} />
+
                     ))
                 }
             </Well>
@@ -102,33 +188,14 @@ class _ChartSpecForm extends Component {
 
 const ChartSpecForm = connect(state => ({
     currentCube: state.cubes.currentCube,
-    chartSpec: state.chartSpect,
+    chartSpec: state.chartSpec,
     currentAggregation: state.aggregation
 }))(_ChartSpecForm);
 
-const transformForVega = (tidyData) => {
-    const keys = tidyData.axes.map(flowRight(normalizeFieldName, property('level')))
-                         .concat(tidyData.measures.map(flowRight(normalizeFieldName, property('name')))),
-          nDrilldowns = tidyData.axes.length;
-    return tidyData.data.map(
-        (d) =>
-            zipObject(keys,
-                      d.slice(0,nDrilldowns).map(property('caption'))
-                       .concat(d.slice(nDrilldowns)))
-    );
-};
-
-
 class Chart extends Component {
 
-    constructor(props) {
-        super(props);
-        this.state = { // yes, stateful.
-            vis: null
-        }
-    }
-
     updateChart() {
+        console.log('TVSH', toVegaShorthand(this.props.spec));
         let vls = shortHandToVegaLite(toVegaShorthand(this.props.spec));
 
         // bail early if we can't generate a valid VL Spec
@@ -156,15 +223,14 @@ class Chart extends Component {
             }
         };
 
-        const vegaSpec = vl.compile(vls);
-
-
-
-        vegaEmbed(this._vegaContainer,
-                  {
-                      mode: 'vega-lite',
-                      spec: vls
-                  });
+        vegaEmbed(
+            this._vegaContainer,
+            {
+                mode: 'vega-lite',
+                spec: vls
+            },
+            (error, result) => vg.tooltip(result.view, vls) // eslint-disable-line no-undef
+        );
 
     }
 
@@ -174,7 +240,9 @@ class Chart extends Component {
 
     render() {
         return (
-            <div ref={(c) => this._vegaContainer = c}>
+            <div>
+                <div ref={(c) => this._vegaContainer = c}></div>
+                <div id="vis-tooltip" className="vg-tooltip"></div>
             </div>
         );
     }

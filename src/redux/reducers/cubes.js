@@ -43,7 +43,7 @@ export default function reducer(state = initialState, action = {}) {
             cc.dimensions.forEach(d => {
                 d.hierarchies.forEach(h => {
                     h.dimension = d;
-                    h.levels.forEach(l => l.hierarchy = h);
+                    h.levels.forEach(l => l.hierarchy = h); // eslint-disable-line no-return-assign
                 })
             });
             return {

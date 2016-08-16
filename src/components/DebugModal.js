@@ -21,6 +21,11 @@ class DebugModal extends Component {
                         <FormGroup>
                             <ControlLabel>API URL</ControlLabel>
                             <FormControl type="text" value={data ? data.url : ''} readOnly style={{fontFamily: 'monospace', fontSize: '12px'}} />
+                            {data ? <div style={{textAlign: 'right'}}><a href={data.url} target="_blank">Open in new window</a></div> : null}
+                        </FormGroup>
+                        <FormGroup>
+                            <ControlLabel>Generated MDX</ControlLabel>
+                            <FormControl componentClass="textarea" value={data ? data.mdx : ''} readOnly style={{fontFamily: 'monospace', fontSize: '12px'}}/>
                         </FormGroup>
                         <FormGroup>
                             <ControlLabel>Vega Lite Shorthand</ControlLabel>

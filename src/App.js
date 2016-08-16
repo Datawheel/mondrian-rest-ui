@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { isNull } from 'lodash';
 
-import { Grid, Row, Col, Nav, Navbar, NavItem, FormGroup, FormControl, Label, Glyphicon, Tabs, Tab, NavDropdown, MenuItem } from 'react-bootstrap';
+import { Grid, Row, Col, Nav, Navbar, NavItem, FormGroup,  Label, Glyphicon, Tabs, Tab } from 'react-bootstrap';
 
 import CubeSelector from './components/CubeSelector';
 import DrillDownMenu from './components/DrillDownMenu';

@@ -45,7 +45,8 @@ export default class Cube {
             throw new Error(`Dimension ${dimensionName} does not exist in cube ${this.name}`);
         }
 
-        return this._dimensionsByName[dimensionName] = dim;
+        this._dimensionsByName[dimensionName] = dim;
+        return this._dimensionsByName[dimensionName];
     }
 
     findMeasure(measureFullName) {
