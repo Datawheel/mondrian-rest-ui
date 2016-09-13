@@ -2,6 +2,8 @@
 
 An experimental UI for [`mondrian-rest`](https://github.com/jazzido/mondrian-rest) inspired by [CubesViewer](https://github.com/jjmontesl/cubesviewer) and [Polestar](https://github.com/vega/polestar).
 
+**Caveat emptor**: It's not feature complete, and it's probably not powerful enough for your needs. Contributions will be appreciated; feature requests and cries for help will be promptly redirected to `/dev/null`.
+
 ![screencast](https://raw.githubusercontent.com/jazzido/mondrian-rest-ui/master/mondrian-rest.gif)
 
 ## Installation
