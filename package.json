@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "devDependencies": {
-    "react-scripts": "0.2.0",
+    "react-scripts": "0.4.1",
     "redux-logger": "^2.6.1"
   },
   "dependencies": {
@@ -17,9 +17,9 @@
     "react-redux": "^4.4.5",
     "redux-thunk": "^2.1.0",
     "url-join": "^1.1.0",
-    "vega": "^2.6.1",
+    "vega": "^2.6.3",
     "vega-embed": "^2.2.0",
-    "vega-lite": "^1.1.1",
+    "vega-lite": "^1.2.0",
     "vega-tooltip": "git+https://github.com/vega/vega-tooltip.git"
   },
   "peerDependencies": {
