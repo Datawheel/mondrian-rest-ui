@@ -1,6 +1,7 @@
-import { fromPairs, omit, map, compact } from 'lodash';
+import { fromPairs, omit, compact, reduce } from 'lodash';
 
-import * as client from '../../lib/mondrian-client.js';
+import { client as mondrianClient } from '../../settings.js';
+import Aggregation from '../../lib/aggregation.js';
 
 const DRILLDOWN_ADDED = 'mondrian/aggregation/DRILLDOWN_ADDED';
 const DRILLDOWN_REMOVED = 'mondrian/aggregation/DRILLDOWN_REMOVED';
@@ -16,7 +17,6 @@ const initialState = {
     drillDowns: [],
     measures: {}
 };
-
 
 export default function reducer(state = initialState, action={}) {
     switch(action.type) {
@@ -82,26 +82,32 @@ function clientCall(dispatch, getState) {
         type: AGGREGATION_LOADING
     });
 
-    return client.getAggregation(state.cubes.currentCube,
-                                 {
-                                     drilldown: state.aggregation.drillDowns,
-                                     // TODO: get dimensions from state
-                                     measures: map(state.aggregation.measures),
-                                     nonempty: true
-                                 })
-                 .then(data =>
-                     dispatch({
-                         type: AGGREGATION_LOADED,
-                         aggregation: data
-                     })
-                 )
-                 .catch(err => {
-                     dispatch({
-                         type: AGGREGATION_FAIL,
-                         error: err
-                     })
-                     // TODO: undo optimistic add
-                 });
+    // add measures
+    let query = reduce(state.aggregation.measures,
+                       (q, m, mn) => q.measure(m.name),
+                       state.cubes.currentCube.query);
+
+    // add drilldowns
+    query = reduce(state.aggregation.drillDowns,
+                   (q, dd) => q.drilldown(dd.hierarchy.dimension.name, dd.hierarchy.name, dd.name),
+                   query);
+
+    // add options
+    query = query.option('nonempty', true).option('debug', true);
+
+
+    return mondrianClient.query(query)
+                         .then(agg => {
+                             console.log('AGG', agg.data);
+                             dispatch({
+                                 type: AGGREGATION_LOADED,
+                                 aggregation: new Aggregation(agg),
+                             })
+                         })
+                         .catch(err => dispatch({
+                             type: AGGREGATION_FAIL,
+                             error: err
+                         }));
 };
 
 export function addDrilldown(level) {

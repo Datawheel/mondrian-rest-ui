@@ -8,8 +8,6 @@ export function toVegaShorthand(spec) {
 
     console.log('spec', spec);
 
-    const vegaFuncName = spec.vegaFunction ? spec.vegaFunction + '_' : '';
-
     const sh = map(toPairs(spec).filter(v => v[0] !== 'mark' && !isNull(v[1])),
                    (v) => `${v[0]}=${v[1].vegaFunction ? v[1].vegaFunction + '_' : ''}${normalizeFieldName(v[1].name)},${v[1].variableType === 'drillDown' ? 'N' : 'Q'}`
                   ).join('|');

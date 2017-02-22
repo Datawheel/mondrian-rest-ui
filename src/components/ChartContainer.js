@@ -3,9 +3,7 @@ import { connect } from 'react-redux';
 import { Grid, Row, Col, Well, FormGroup, InputGroup, FormControl, Glyphicon } from 'react-bootstrap';
 
 import { values, map, fromPairs, keys } from 'lodash';
-import vegaLite from 'vega-lite';
 import vegaEmbed from 'vega-embed';
-import vegaTooltip from 'vega-tooltip';
 import dl from 'datalib';
 
 // vega-tooltip needs datalib in the global scope
@@ -195,7 +193,6 @@ const ChartSpecForm = connect(state => ({
 class Chart extends Component {
 
     updateChart() {
-        console.log('TVSH', toVegaShorthand(this.props.spec));
         let vls = shortHandToVegaLite(toVegaShorthand(this.props.spec));
 
         // bail early if we can't generate a valid VL Spec

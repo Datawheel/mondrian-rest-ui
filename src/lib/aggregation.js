@@ -80,8 +80,9 @@ export default class Aggregation {
 
     constructor(agg) {
         // `agg` comes from mondrian-client.getAggregation
+        Object.assign(this, agg.data);
         Object.assign(this, agg);
-        this.hasParents = (this.params.parents);
+        this.hasParents = (this.options.parents);
     }
 
     /**

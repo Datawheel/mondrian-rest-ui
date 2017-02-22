@@ -1,13 +1,11 @@
-import urljoin from 'url-join';
-
 import { setMeasure, clearMeasures, clearDrildowns } from './aggregation';
 
 const LOAD_CUBES = 'mondrian/cubes/LOAD';
-const LOAD_CUBES_SUCCESS = 'mondrian/cubes/SUCESS';
+const LOAD_CUBES_SUCCESS = 'mondrian/cubes/SUCCESS';
 const LOAD_CUBES_FAIL = 'mondrian/cubes/FAIL';
 const SELECT_CUBE = 'mondrian/cubes/SELECT';
 
-import { __API_ENDPOINT__ } from '../../settings';
+import { client } from '../../settings';
 
 const initialState = {
     cubes: [],
@@ -27,7 +25,7 @@ export default function reducer(state = initialState, action = {}) {
                 loading: false,
                 loaded: true,
                 error: null,
-                cubes: action.result.cubes
+                cubes: action.result
             };
         case LOAD_CUBES_FAIL:
             return {
@@ -39,13 +37,6 @@ export default function reducer(state = initialState, action = {}) {
             };
         case SELECT_CUBE:
             let cc = state.cubes.find(c => c.name === action.name);
-            // add references to parent elements
-            cc.dimensions.forEach(d => {
-                d.hierarchies.forEach(h => {
-                    h.dimension = d;
-                    h.levels.forEach(l => l.hierarchy = h); // eslint-disable-line no-return-assign
-                })
-            });
             return {
                 ...state,
                 currentCube: cc
@@ -56,11 +47,13 @@ export default function reducer(state = initialState, action = {}) {
 }
 
 export function loadCubes() {
-    return {
-        types: [LOAD_CUBES, LOAD_CUBES_SUCCESS, LOAD_CUBES_FAIL],
-        promise: (client) => {
-            return client.get(urljoin(__API_ENDPOINT__, 'cubes'));
-        }
+    return (dispatch, getState) => {
+        dispatch({ type: LOAD_CUBES });
+        return client.cubes()
+                     .then(cubes =>
+                         {
+                             dispatch({type: LOAD_CUBES_SUCCESS, result: cubes });
+                         });
     };
 }
 
