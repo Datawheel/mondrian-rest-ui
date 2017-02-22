@@ -69,7 +69,7 @@ class DataTable extends Component{
                                                 {
                                                     row.map((cell, j) =>
                                                         <td key={j} className={j >= cntDims ? 'measureCell' : ''}>
-                                                            {j < cntDims ? cell.caption : cell}
+                                                            {j < cntDims ? cell.caption : (typeof(cell) == 'number' ? cell.toLocaleString() : cell)}
                                                         </td>)
                                                 }
                                             </tr>

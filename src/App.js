@@ -14,6 +14,8 @@ import DebugModal from './components/DebugModal';
 import { removeDrilldown } from './redux/reducers/aggregation';
 import { showModal } from './redux/reducers/modal';
 
+import './css/App.css';
+
 class App extends Component {
   render() {
     return (
@@ -34,14 +36,17 @@ class App extends Component {
                             </FormGroup>
                             {' '}
                         </Navbar.Form>
-                        <DrillDownMenu cube={this.props.currentCube}/>
+                        <DrillDownMenu disabled={this.props.loading} cube={this.props.currentCube}/ >
                     </Nav>
                     <Nav pullRight>
-                        <NavItem disabled={isNull(this.props.currentCube)} eventKey={1} href="#" onClick={() => this.props.dispatch(showModal())}>Debug</NavItem>
+                        <NavItem disabled={this.props.loading || isNull(this.props.currentCube)} eventKey={1} href="#" onClick={() => this.props.dispatch(showModal())}>Debug</NavItem>
                     </Nav>
                 </Navbar.Collapse>
             </Navbar>
-            <div className="container">
+            <div className="container" style={{position: 'relative'}}>
+                <div className="loading-overlay" style={{visibility: this.props.loading ? 'visible' : 'hidden' }}>
+                    <div className="loader" />
+                </div>
                 <Grid>
                     <Row>
                         <Col md={1}>
@@ -81,7 +86,8 @@ class App extends Component {
 const ConnectedApp = connect((state) => (
     {
         currentCube: state.cubes.currentCube,
-        drillDowns: state.aggregation.drillDowns
+        drillDowns: state.aggregation.drillDowns,
+        loading: state.aggregation.loading
     }
 ))(App);
 
