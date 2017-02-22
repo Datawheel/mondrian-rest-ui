@@ -8,11 +8,10 @@ import { createStore, applyMiddleware } from 'redux';
 import App from './App';
 import './index.css';
 
-import reduxMiddleware from './redux/middleware';
 import reducer from './redux/reducers';
 
 let store = createStore(reducer,
-                        applyMiddleware(reduxMiddleware, thunk, createLogger()));
+                        applyMiddleware(thunk, createLogger()));
 
 ReactDOM.render(
     <Provider store={store}>
