@@ -6,7 +6,7 @@ import { addDrilldown } from '../redux/reducers/aggregation';
 import '../css/DrillDownMenu.css';
 
 export default function DrillDownMenu(props, context) {
-    const { cube } = props,
+    const { cube, drillDowns } = props,
           { dispatch } = context.store,
     dimensions = cube ? cube.dimensions : [];
 
@@ -19,7 +19,11 @@ export default function DrillDownMenu(props, context) {
                     {d.hierarchies[0]
                     .levels
                     .slice(1)
-                      .map((l,j) => <li key={`${i}.${j}`} onClick={() => dispatch(addDrilldown(l))}><a tabIndex="-1" href="#">{l.name}</a></li>
+                      .map((l,j) =>
+                          <li key={`${i}.${j}`}
+                              onClick={() => dispatch(addDrilldown(l))}>
+                              <a tabIndex="-1" href="#">{ drillDowns.find(dd => dd === l) ? '✓ ' : ' ' }{l.name}</a>
+                          </li>
                     )}
                 </ul>
             </li>)

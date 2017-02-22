@@ -36,7 +36,8 @@ class App extends Component {
                             </FormGroup>
                             {' '}
                         </Navbar.Form>
-                        <DrillDownMenu disabled={this.props.loading} cube={this.props.currentCube}/ >
+                        <DrillDownMenu disabled={this.props.loading} drillDowns={this.props.drillDowns} cube={this.props.currentCube} />
+                        <CutMenu disabled={this.props.loading} cube={this.props.currentCube} />
                     </Nav>
                     <Nav pullRight>
                         <NavItem disabled={this.props.loading || isNull(this.props.currentCube)} eventKey={1} href="#" onClick={() => this.props.dispatch(showModal())}>Debug</NavItem>
