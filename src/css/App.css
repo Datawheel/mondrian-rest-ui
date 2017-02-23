@@ -1,3 +1,16 @@
+.pill {
+  font-size: 14px;
+  font-weight: normal;
+}
+
+.pill:hover {
+  cursor: pointer;
+}
+
+.pill .remove:hover {
+  color: red;
+}
+
 .loading-overlay {
   position: absolute;
   z-index: 42;

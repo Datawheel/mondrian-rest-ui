@@ -1,18 +1,21 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { isNull } from 'lodash';
+import { isNull, map } from 'lodash';
 
 import { Grid, Row, Col, Nav, Navbar, NavItem, FormGroup,  Label, Glyphicon, Tabs, Tab } from 'react-bootstrap';
 
 import CubeSelector from './components/CubeSelector';
 import DrillDownMenu from './components/DrillDownMenu';
+import CutMenu from './components/CutMenu';
 import DataTable from './components/DataTable';
 import MeasuresSelector from './components/MeasuresSelector';
 import { ChartContainer } from './components/ChartContainer';
 import DebugModal from './components/DebugModal';
+import CutModal from './components/CutModal';
 
-import { removeDrilldown } from './redux/reducers/aggregation';
+import { removeDrilldown, removeCut } from './redux/reducers/aggregation';
 import { showModal } from './redux/reducers/modal';
+import { showCutModal } from './redux/reducers/cutModal';
 
 import './css/App.css';
 
@@ -21,6 +24,7 @@ class App extends Component {
     return (
         <div className="App">
             <DebugModal />
+            <CutModal />
             <Navbar>
                 <Navbar.Header>
                     <Navbar.Brand>
@@ -38,6 +42,7 @@ class App extends Component {
                         </Navbar.Form>
                         <DrillDownMenu disabled={this.props.loading} drillDowns={this.props.drillDowns} cube={this.props.currentCube} />
                         <CutMenu disabled={this.props.loading} cube={this.props.currentCube} />
+
                     </Nav>
                     <Nav pullRight>
                         <NavItem disabled={this.props.loading || isNull(this.props.currentCube)} eventKey={1} href="#" onClick={() => this.props.dispatch(showModal())}>Debug</NavItem>
@@ -55,7 +60,23 @@ class App extends Component {
                         </Col>
                         <Col md={11}>
                             {this.props.drillDowns.map((dd, i) =>
-                                <Label style={{fontSize: '14px', fontWeight: 'normal'}} bsStyle="primary" key={i}>{dd.hierarchy.dimension.name} / {dd.name}<Glyphicon glyph="remove" style={{top: '2px', marginLeft: '5px'}} onClick={() => this.props.dispatch(removeDrilldown(dd))} /></Label>
+                                <Label className="pill"
+                                       bsStyle="primary"
+                                       key={i}>{dd.hierarchy.dimension.name} / {dd.name}<Glyphicon className="remove" glyph="remove" style={{top: '2px', marginLeft: '5px'}} onClick={() => this.props.dispatch(removeDrilldown(dd))} /></Label>
+                             )}
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col md={1}>
+                            Cuts:
+                        </Col>
+                        <Col md={11}>
+                            {map(this.props.cuts, (cut, level, i) =>
+                                <Label className="pill"
+                                       bsStyle="primary"
+                                       key={level}
+                                       onClick={() => this.props.dispatch(showCutModal(cut.level))}>
+                                    {cut.level.hierarchy.dimension.name} / {cut.level.name}{ cut.cutMembers.length > 1 ? `(${cut.cutMembers.length})` : `: ${cut.cutMembers[0].caption}` }<Glyphicon className="remove" glyph="remove" style={{top: '2px', marginLeft: '5px'}} onClick={(e) => { this.props.dispatch(removeCut(cut.level)); e.stopPropagation(); }} /></Label>
                              )}
                         </Col>
                     </Row>
@@ -88,6 +109,7 @@ const ConnectedApp = connect((state) => (
     {
         currentCube: state.cubes.currentCube,
         drillDowns: state.aggregation.drillDowns,
+        cuts: state.aggregation.cuts,
         loading: state.aggregation.loading
     }
 ))(App);

@@ -12,31 +12,17 @@ const AGGREGATION_FAIL = 'mondrian/aggregation/AGGREGATION_FAIL';
 const AGGREGATION_CLEAR = 'mondrian/aggregation/AGGREGATION_CLEAR';
 const MEASURE_SET = 'mondrian/aggregation/MEASURE_SET';
 const MEASURE_CLEAR_ALL = 'mondrian/aggregation/MEASURE_CLEAR_ALL';
+const CUT_SET = 'mondrian/aggregation/CUT_SET';
+const CUT_REMOVED = 'mondrian/aggregation/CUT_REMOVED';
 
 const initialState = {
     drillDowns: [],
+    cuts: {},
     measures: {}
 };
 
 export default function reducer(state = initialState, action={}) {
     switch(action.type) {
-        case DRILLDOWN_ADDED:
-            return {
-                ...state,
-                // TODO: only concat() if not already contained in the list
-                drillDowns: state.drillDowns.concat([action.level])
-            };
-        case DRILLDOWN_REMOVED:
-            return {
-                ...state,
-                drillDowns: state.drillDowns.filter(l => l !== action.level)
-            };
-        case DRILLDOWN_CLEAR_ALL:
-            return {
-                ...state,
-                drillDowns: [],
-                data: null
-            };
         case AGGREGATION_LOADING:
             return {
                 ...state,
@@ -54,6 +40,38 @@ export default function reducer(state = initialState, action={}) {
             return {
                 ...state,
                 data: null
+            }
+        case DRILLDOWN_ADDED:
+            return {
+                ...state,
+                // TODO: only concat() if not already contained in the list
+                drillDowns: state.drillDowns.concat([action.level])
+            };
+        case DRILLDOWN_REMOVED:
+            return {
+                ...state,
+                drillDowns: state.drillDowns.filter(l => l !== action.level)
+            };
+        case DRILLDOWN_CLEAR_ALL:
+            return {
+                ...state,
+                drillDowns: [],
+                data: null
+            };
+        case CUT_SET:
+            const c = {};
+            c[action.level.fullName] = {
+                level: action.level,
+                cutMembers: action.cutMembers
+            };
+            return {
+                ...state,
+                cuts: { ...state.cuts, ...c}
+            };
+        case CUT_REMOVED:
+            return {
+                ...state,
+                cuts: omit(state.cuts, [action.level.fullName])
             }
         case MEASURE_SET:
             return {
@@ -92,13 +110,20 @@ function clientCall(dispatch, getState) {
                    (q, dd) => q.drilldown(dd.hierarchy.dimension.name, dd.hierarchy.name, dd.name),
                    query);
 
+    // add cuts
+    query = reduce(state.aggregation.cuts,
+                   (q, cut) => {
+                       const cutExpr = (cut.cutMembers.length === 1) ? cut.cutMembers[0].fullName : `{${cut.cutMembers.map(cm => cm.fullName).join(',')}}`;
+                       return q.cut(cutExpr)
+                   },
+                   query);
+
     // add options
     query = query.option('nonempty', true).option('debug', true);
 
 
     return mondrianClient.query(query)
                          .then(agg => {
-                             console.log('AGG', agg.data);
                              dispatch({
                                  type: AGGREGATION_LOADED,
                                  aggregation: new Aggregation(agg),
@@ -142,6 +167,27 @@ export function removeDrilldown(level) {
 export function clearDrildowns() {
     return {
         type: DRILLDOWN_CLEAR_ALL
+    };
+}
+
+export function setCut(cutMembers, level) {
+    return (dispatch, getState) => {
+        dispatch({
+            type: CUT_SET,
+            cutMembers: cutMembers,
+            level: level
+        });
+        clientCall(dispatch, getState);
+    };
+}
+
+export function removeCut(level) {
+    return (dispatch, getState) => {
+        dispatch({
+            type: CUT_REMOVED,
+            level: level
+        });
+        clientCall(dispatch, getState);
     };
 }
 
