@@ -26,10 +26,14 @@ class CutModal extends Component {
 
     onCutSet() {
         this.props.dispatch(setCut(this.state.selectedMembers, this.props.cutModal.level));
+        this.onHide();
+    }
+
+    onHide() {
+        this.props.dispatch(hideCutModal());
         this.setState({
             selectedMembers: []
         });
-        this.props.dispatch(hideCutModal());
     }
 
     componentWillReceiveProps(nextProps) {
@@ -48,7 +52,7 @@ class CutModal extends Component {
         if (!visible) return null;
 
         return (
-            <Modal show={visible} onHide={() => this.props.dispatch(hideCutModal())}>
+            <Modal show={visible} onHide={this.onHide.bind(this)}>
                 <Modal.Header>
                     <Modal.Title>Cut by {level.hierarchy.dimension.caption}.{level.caption}</Modal.Title>
                 </Modal.Header>
