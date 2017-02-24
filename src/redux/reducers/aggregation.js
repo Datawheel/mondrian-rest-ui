@@ -88,6 +88,10 @@ export default function reducer(state = initialState, action={}) {
     }
 }
 
+function memberKey(member) {
+    return `[${member.level.hierarchy.dimension.name}].[${member.level.name}].&[${member.key}]`;
+}
+
 function clientCall(dispatch, getState) {
     const state = getState(),
           dds = compact(state.aggregation.drillDowns);
@@ -113,7 +117,7 @@ function clientCall(dispatch, getState) {
     // add cuts
     query = reduce(state.aggregation.cuts,
                    (q, cut) => {
-                       const cutExpr = (cut.cutMembers.length === 1) ? cut.cutMembers[0].fullName : `{${cut.cutMembers.map(cm => cm.fullName).join(',')}}`;
+                       const cutExpr = (cut.cutMembers.length === 1) ? memberKey(cut.cutMembers[0]) : `{${cut.cutMembers.map(memberKey).join(',')}}`;
                        return q.cut(cutExpr)
                    },
                    query);

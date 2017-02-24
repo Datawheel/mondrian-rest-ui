@@ -38,7 +38,7 @@ export function showCutModal(level) {
                 dispatch({
                     type: CUT_MODAL_SHOW,
                     level: level,
-                    members: members
+                    members: members.map((m) => ({ ...m, level: level }))
                 });
             })
     };
