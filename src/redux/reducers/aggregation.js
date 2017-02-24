@@ -40,7 +40,7 @@ export default function reducer(state = initialState, action={}) {
             return {
                 ...state,
                 data: null
-            }
+            };
         case DRILLDOWN_ADDED:
             return {
                 ...state,
@@ -72,7 +72,7 @@ export default function reducer(state = initialState, action={}) {
             return {
                 ...state,
                 cuts: omit(state.cuts, [action.level.fullName])
-            }
+            };
         case MEASURE_SET:
             return {
                 ...state,
@@ -130,8 +130,8 @@ function clientCall(dispatch, getState) {
                          .then(agg => {
                              dispatch({
                                  type: AGGREGATION_LOADED,
-                                 aggregation: new Aggregation(agg),
-                             })
+                                 aggregation: new Aggregation(agg)
+                             });
                          })
                          .catch(err => dispatch({
                              type: AGGREGATION_FAIL,
