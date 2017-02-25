@@ -17,7 +17,6 @@ class CubeSelector extends Component {
 
     render() {
         return (
-            // <select onChange={this.onChange.bind(this)}>
             <FormControl componentClass="select"
                          placeholder="select"
                          onChange={this.onChange.bind(this)}>
