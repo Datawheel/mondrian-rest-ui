@@ -13,10 +13,12 @@ function MeasuresSelector(props) {
     }
 
     return (
-        // <select onChange={this.onChange.bind(this)}>
         <FormGroup>
             {measures.map((m,i) =>
-                <Checkbox checked={m.name in props.selectedMeasures} key={i} onChange={partialRight(onChange, m)} inline>{m.caption}</Checkbox>
+                <Checkbox checked={m.name in props.selectedMeasures}
+                          key={i}
+                          onChange={partialRight(onChange, m)}
+                          inline>{m.caption}</Checkbox>
              )}
         </FormGroup>
     );
