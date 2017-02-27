@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { findIndex } from 'lodash';
 
 import { Modal, FormGroup, ControlLabel, FormControl, Button } from 'react-bootstrap';
 
@@ -20,7 +19,7 @@ class CutModal extends Component {
         const { members } = this.props.cutModal;
 
         this.setState({
-            selectedMembers: members.filter(m => options.find(sm => sm.value == m.key))
+            selectedMembers: members.filter(m => options.find(sm => sm.value.toString() === m.key))
         });
     }
 
