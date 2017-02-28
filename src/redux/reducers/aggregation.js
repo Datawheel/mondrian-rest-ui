@@ -118,7 +118,7 @@ function clientCall(dispatch, getState) {
     query = reduce(state.aggregation.cuts,
                    (q, cut) => {
                        const cutExpr = (cut.cutMembers.length === 1) ? memberKey(cut.cutMembers[0]) : `{${cut.cutMembers.map(memberKey).join(',')}}`;
-                       return q.cut(cutExpr)
+                       return q.cut(cutExpr);
                    },
                    query);
 
