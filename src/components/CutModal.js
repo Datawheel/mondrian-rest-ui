@@ -19,7 +19,9 @@ class CutModal extends Component {
         const { members } = this.props.cutModal;
 
         this.setState({
-            selectedMembers: members.filter(m => options.find(sm => sm.value.toString() === m.key))
+            // (make linter shut up about the ==)
+            // eslint-disable-next-line 
+            selectedMembers: members.filter(m => options.find(sm => sm.value == m.key))
         });
     }
 
