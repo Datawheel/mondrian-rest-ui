@@ -14,11 +14,17 @@ const MEASURE_SET = 'mondrian/aggregation/MEASURE_SET';
 const MEASURE_CLEAR_ALL = 'mondrian/aggregation/MEASURE_CLEAR_ALL';
 const CUT_SET = 'mondrian/aggregation/CUT_SET';
 const CUT_REMOVED = 'mondrian/aggregation/CUT_REMOVED';
+const SET_OPTION = 'mondrian/aggregation/SET_OPTION';
 
 const initialState = {
     drillDowns: [],
     cuts: {},
-    measures: {}
+    measures: {},
+    options: {
+        nonempty: true,
+        distinct: false,
+        parents: false
+    }
 };
 
 export default function reducer(state = initialState, action={}) {
@@ -83,6 +89,13 @@ export default function reducer(state = initialState, action={}) {
                 ...state,
                 measures: {}
             };
+        case SET_OPTION:
+            const a = {}; a[action.option] = action.value;
+            const opt = { options: { ...state.options, ...a} };
+            return {
+                ...state,
+                ...opt
+            };
         default:
             return state;
     }
@@ -123,8 +136,9 @@ function clientCall(dispatch, getState) {
                    query);
 
     // add options
-    query = query.option('nonempty', true).option('debug', true);
-
+    query = reduce(state.aggregation.options,
+                   (q, val, opt) => q.option(opt, val),
+                   query);
 
     return mondrianClient.query(query)
                          .then(agg => {
@@ -210,4 +224,17 @@ export function clearMeasures() {
     return {
         type: MEASURE_CLEAR_ALL
     };
+}
+
+export function setOption(option, value) {
+    return (dispatch, getstate) => {
+        dispatch({
+            type: SET_OPTION,
+            option: option,
+            value: value
+        });
+        clientCall(dispatch, getstate);
+        
+    };
+
 }
