@@ -3,19 +3,19 @@
   "version": "0.0.1",
   "private": true,
   "devDependencies": {
-    "react-scripts": "0.7.0",
+    "react-scripts": "0.9.4",
     "redux-logger": "^2.6.1"
   },
   "dependencies": {
     "bluebird": "^3.4.1",
-    "form-urlencoded": "1.4.1",
+    "form-urlencoded": "1.5.0",
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.14.1",
     "mondrian-rest-client": "Datawheel/mondrian-rest-client",
     "react": "^15.2.1",
     "react-bootstrap": "^0.30.0",
     "react-dom": "^15.2.1",
-    "react-redux": "^4.4.5",
+    "react-redux": "^5.0.3",
     "redux": "^3.6.0",
     "redux-thunk": "^2.1.0",
     "url-join": "^1.1.0",
