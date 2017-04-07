@@ -64,16 +64,17 @@ class DataTable extends Component{
                                 <tbody>
                                     {agg.data.slice((activePage - 1) * PAGE_SIZE,
                                                     (activePage - 1) * PAGE_SIZE + PAGE_SIZE)
-                                        .map((row, i) => (
-                                            <tr key={i}>
-                                                {
-                                                    row.map((cell, j) =>
-                                                        <td key={j} className={j >= cntDims ? 'measureCell' : ''}>
-                                                            {j < cntDims ? cell.caption : (typeof(cell) === 'number' ? cell.toLocaleString() : cell)}
-                                                        </td>)
-                                                }
-                                            </tr>
-                                        ))}
+                                        .map((row, i) => {
+                                            return (
+                                                <tr key={i}>
+                                                    {
+                                                        row.map((cell, j) =>
+                                                            <td key={j} className={j >= cntDims ? 'measureCell' : ''}>
+                                                                {j < cntDims ? cell.caption : (typeof(cell) === 'number' ? cell.toLocaleString() : cell)}
+                                                            </td>)
+                                                    }
+                                                </tr>
+                                        )})}
                                 </tbody>
                             </Table>
                         </Col>

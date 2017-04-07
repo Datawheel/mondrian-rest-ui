@@ -23,7 +23,8 @@ const initialState = {
     options: {
         nonempty: true,
         distinct: false,
-        parents: false
+        parents: false,
+        debug: true
     }
 };
 

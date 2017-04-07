@@ -19,6 +19,7 @@ function lazyProduct(sets,f,context){
     dive(0);
 }
 
+
 // Generate 'tidy data' (http://vita.had.co.nz/papers/tidy-data.pdf)
 // from a result set
 function tidyResponse(resp) {
@@ -29,8 +30,7 @@ function tidyResponse(resp) {
               .map(e => {
                   return _.zip(e.members, _.range(e.members.length));
               }),
-          values = resp.values,
-          hasParents = ('axis_parents' in resp);
+          values = resp.values;
 
     let data = [];
 
@@ -40,11 +40,7 @@ function tidyResponse(resp) {
               cm = cell.map(
                   (c, i) => {
                       const c0 = c[0];
-                      return hasParents
-                           ? { ...c0,
-                               parent: resp.axis_parents[i+1][c0['parent_name']]
-                           }
-                           : c0;
+                      return c0;
                   }
               ),
               mvalues = measures.map((m, mi) => {
