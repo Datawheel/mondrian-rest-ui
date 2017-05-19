@@ -1,18 +1,16 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Grid, Row, Col, Well, FormGroup, InputGroup, FormControl, Glyphicon } from 'react-bootstrap';
 
 import { values, map, fromPairs, keys } from 'lodash';
 import vegaEmbed from 'vega-embed';
-import dl from 'datalib';
-
-// vega-tooltip needs datalib in the global scope
-if (window) window.dl = dl;
 
 import { setSpecField, setMarkType } from '../redux/reducers/chartSpec';
 import { toVegaShorthand, shortHandToVegaLite, transformForVega } from '../lib/vega-utils';
 
 import '../css/ChartContainer.css';
+
 
 const FIELD_TYPES_FUNCS = {
     quantitative: [
@@ -94,7 +92,7 @@ function FieldOptions(props, context) {
 }
 
 FieldOptions.contextTypes = {
-    store: React.PropTypes.object.isRequired
+    store: PropTypes.object.isRequired
 };
 
 
@@ -225,8 +223,7 @@ class Chart extends Component {
             {
                 mode: 'vega-lite',
                 spec: vls
-            },
-            (error, result) => vg.tooltip(result.view, vls) // eslint-disable-line no-undef
+            }
         );
 
     }

@@ -1,11 +1,11 @@
 import { setMeasure, clearMeasures, clearDrildowns } from './aggregation';
 
+import { client } from '../../settings';
+
 const LOAD_CUBES = 'mondrian/cubes/LOAD';
 const LOAD_CUBES_SUCCESS = 'mondrian/cubes/SUCCESS';
 const LOAD_CUBES_FAIL = 'mondrian/cubes/FAIL';
 const SELECT_CUBE = 'mondrian/cubes/SELECT';
-
-import { client } from '../../settings';
 
 const initialState = {
     cubes: [],

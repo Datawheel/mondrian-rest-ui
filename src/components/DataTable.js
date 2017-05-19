@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Grid, Row, Col, Table, Pagination, DropdownButton, MenuItem, Glyphicon } from 'react-bootstrap';
 
@@ -9,7 +10,7 @@ import '../css/DataTable.css';
 
 class DataTable extends Component{
     static contextTypes = {
-        store: React.PropTypes.object.isRequired
+        store: PropTypes.object.isRequired
     };
 
     render() {

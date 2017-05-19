@@ -1,6 +1,7 @@
 import React from 'react';
-import { NavDropdown } from 'react-bootstrap';
 import { isNull } from 'lodash';
+import PropTypes from 'prop-types';
+import { NavDropdown } from 'react-bootstrap';
 
 import { showCutModal } from '../redux/reducers/cutModal';
 import '../css/DrillDownMenu.css';
@@ -33,5 +34,5 @@ export default function CutMenu(props, context) {
 }
 
 CutMenu.contextTypes = {
-    store: React.PropTypes.object.isRequired
+    store: PropTypes.object.isRequired
 };

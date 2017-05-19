@@ -19,7 +19,7 @@ function DebugModal(props) {
                     <FormGroup>
                         <ControlLabel>API URL</ControlLabel>
                         <FormControl type="text" value={data ? data.url : ''} readOnly style={{fontFamily: 'monospace', fontSize: '12px'}} />
-                        {data ? <div style={{textAlign: 'right'}}><a href={data.url} target="_blank">Open in new window</a></div> : null}
+                        {data ? <div style={{textAlign: 'right'}}><a href={data.url} target="_blank" rel="noopener noreferrer">Open in new window</a></div> : null}
                     </FormGroup>
                     <FormGroup>
                         <ControlLabel>Generated MDX</ControlLabel>

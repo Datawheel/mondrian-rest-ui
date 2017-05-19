@@ -1,6 +1,8 @@
 import React from 'react';
-import { NavDropdown } from 'react-bootstrap';
 import { isNull } from 'lodash';
+import PropTypes from 'prop-types';
+
+import { NavDropdown } from 'react-bootstrap';
 
 import { addDrilldown } from '../redux/reducers/aggregation';
 import '../css/DrillDownMenu.css';
@@ -33,5 +35,5 @@ export default function DrillDownMenu(props, context) {
 }
 
 DrillDownMenu.contextTypes = {
-    store: React.PropTypes.object.isRequired
+    store: PropTypes.object.isRequired
 };
