@@ -1,4 +1,6 @@
 import { fromPairs, omit, compact, reduce } from 'lodash';
+import update from 'immutability-helper';
+
 
 import { client as mondrianClient } from '../../settings.js';
 import Aggregation from '../../lib/aggregation.js';
@@ -14,11 +16,14 @@ const MEASURE_SET = 'mondrian/aggregation/MEASURE_SET';
 const MEASURE_CLEAR_ALL = 'mondrian/aggregation/MEASURE_CLEAR_ALL';
 const CUT_SET = 'mondrian/aggregation/CUT_SET';
 const CUT_REMOVED = 'mondrian/aggregation/CUT_REMOVED';
+const PROPERTY_SET = 'mondrian/aggregation/PROPERTY_SET';
+const PROPERTY_REMOVE = 'mondrian/aggregation/PROPERTY_REMOVE';
 
 const initialState = {
     drillDowns: [],
     cuts: {},
-    measures: {}
+    measures: {},
+    properties: {}
 };
 
 export default function reducer(state = initialState, action={}) {
@@ -42,11 +47,10 @@ export default function reducer(state = initialState, action={}) {
                 data: null
             };
         case DRILLDOWN_ADDED:
-            return {
-                ...state,
-                // TODO: only concat() if not already contained in the list
-                drillDowns: state.drillDowns.concat([action.level])
-            };
+            return update(state,
+                          {
+                              drillDowns: { $push: [action.level ]}
+                          });
         case DRILLDOWN_REMOVED:
             return {
                 ...state,
@@ -73,10 +77,27 @@ export default function reducer(state = initialState, action={}) {
                 ...state,
                 cuts: omit(state.cuts, [action.level.fullName])
             };
+        case PROPERTY_SET:
+            const { level, add, propertyName } = action;
+            const p = state.properties;
+            const dn = action.level.hierarchy.dimension.name;
+
+            if (action.add) {
+                if (!p[dn]) p[dn] = new Set();
+                p[dn].add(propertyName);
+            }
+            else {
+                p[dn].delete(propertyName);
+            }
+
+            return {
+               ...state,
+               properties: { ...state.properties, ...p }
+            };
         case MEASURE_SET:
             return {
                 ...state,
-                measures: action.add ? Object.assign({}, state.measures, fromPairs([[action.measure.name, action.measure]])) : omit(state.measures, action.measure.name)
+                measures: action.add ? { ...state.measures, ...fromPairs([[action.measure.name, action.measure]]) } : omit(state.measures, action.measure.name)
             };
         case MEASURE_CLEAR_ALL:
             return {
@@ -119,6 +140,19 @@ function clientCall(dispatch, getState) {
                    (q, cut) => {
                        const cutExpr = (cut.cutMembers.length === 1) ? memberKey(cut.cutMembers[0]) : `{${cut.cutMembers.map(memberKey).join(',')}}`;
                        return q.cut(cutExpr);
+                   },
+                   query);
+
+    // add properties
+    query = reduce(state.aggregation.properties,
+                   (q, props, dimName) => {
+                       // find dimension of the level we're drilling down into
+                       const d = state.aggregation
+                             .drillDowns.find(dd => dd.hierarchy.dimension.name === dimName);
+
+                       return reduce(Array.from(props),
+                                     (q, propName) => q.property(dimName, d.name, propName),
+                                     q);
                    },
                    query);
 
@@ -195,6 +229,18 @@ export function removeCut(level) {
     };
 }
 
+export function setProperty(level, propertyName, add) {
+    return (dispatch, getState) => {
+        dispatch({
+            type: PROPERTY_SET,
+            level: level,
+            propertyName: propertyName,
+            add: add
+        });
+        clientCall(dispatch, getState);
+    };
+}
+
 export function setMeasure(measure, add) {
     return (dispatch, getState) => {
         dispatch({ // optimistic set
@@ -211,3 +257,7 @@ export function clearMeasures() {
         type: MEASURE_CLEAR_ALL
     };
 }
+
+// Local Variables:
+// js2-basic-offset: 4
+// End:

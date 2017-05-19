@@ -7,18 +7,16 @@
     "redux-logger": "^2.6.1"
   },
   "dependencies": {
-    "bluebird": "^3.4.1",
-    "isomorphic-fetch": "^2.2.1",
+    "immutability-helper": "^2.2.0",
     "lodash": "^4.14.1",
-    "mondrian-rest-client": "Datawheel/mondrian-rest-client",
+    "mondrian-rest-client": "Datawheel/mondrian-rest-client#fe9381d9219c6243788e05e138cbd5f96cce9534",
     "prop-types": "^15.5.10",
     "react": "^15.2.1",
-    "react-bootstrap": "^0.30.0",
+    "react-bootstrap": "^0.31.0",
     "react-dom": "^15.2.1",
     "react-redux": "^5.0.3",
     "redux": "^3.6.0",
     "redux-thunk": "^2.1.0",
-    "url-join": "^1.1.0",
     "vega": "^2.6.3",
     "vega-embed": "^2.2.0",
     "vega-lite": "^1.2.0"
