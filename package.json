@@ -10,7 +10,7 @@
     "bluebird": "^3.4.1",
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.14.1",
-    "mondrian-rest-client": "Datawheel/mondrian-rest-client",
+    "mondrian-rest-client": "Datawheel/mondrian-rest-client#0dd6fa58813cd1f8919e8dd839ebfa63c1025ee3",
     "prop-types": "^15.5.10",
     "react": "^15.2.1",
     "react-bootstrap": "^0.30.0",
@@ -20,8 +20,9 @@
     "redux-thunk": "^2.1.0",
     "url-join": "^1.1.0",
     "vega": "^2.6.3",
-    "vega-embed": "^2.2.0",
-    "vega-lite": "^1.2.0"
+    "vega-embed": "^3.0.0-beta.14",
+    "vega-lite": "2.0.0-beta.3",
+    "vega-tooltip": "^0.3.3"
   },
   "scripts": {
     "start": "react-scripts start",
