@@ -27,17 +27,15 @@ function _PropertySelectorDropdown(props) {
     selectedProps = aggregation.properties[level.hierarchy.dimension.name];
   }
 
-  console.log('selectedProps', selectedProps);
-
   return (
     <DropdownButton bsSize="small" title={<Glyphicon glyph="align-justify"/>} bsStyle="link">
       {
         level.properties.map((pname, i) => {
           return (<MenuItem key={i} eventKey={i}>
           <Checkbox
-      checked={selectedProps.has(pname)}
-      onChange={partialRight(onChange, pname)}
-      inline>{pname}</Checkbox>
+             checked={selectedProps.has(pname)}
+             onChange={partialRight(onChange, pname)}
+             inline>{pname}</Checkbox>
           </MenuItem>);
         })
       }
