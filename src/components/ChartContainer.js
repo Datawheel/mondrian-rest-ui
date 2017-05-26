@@ -200,8 +200,6 @@ class Chart extends Component {
     }
 
         let vls = specToVegaLite(this.props.spec);
-        console.log('vls before', vls);
-
         vls = {
             ...vls,
             mark: this.props.spec.mark,
@@ -210,19 +208,11 @@ class Chart extends Component {
             }
         };
 
-        console.log('vls after', vls);
-
         vegaEmbed(
           this._vegaContainer,
           vls,
           {
             mode: 'vega-lite'
-          },
-          (error, result) => {
-            if (error) {
-              return console.error(error);
-            }
-            vlTooltip(result.view, vls, {});
           }
         );
 
