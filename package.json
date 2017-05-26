@@ -10,7 +10,7 @@
     "bluebird": "^3.4.1",
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.14.1",
-    "mondrian-rest-client": "Datawheel/mondrian-rest-client",
+    "mondrian-rest-client": "Datawheel/mondrian-rest-client#0dd6fa58813cd1f8919e8dd839ebfa63c1025ee3",
     "prop-types": "^15.5.10",
     "react": "^15.2.1",
     "react-bootstrap": "^0.30.0",
