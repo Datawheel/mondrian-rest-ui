@@ -242,24 +242,21 @@ class Chart extends Component {
     }
 }
 
-class _ChartContainer extends Component {
-    render() {
-        return (
-            <Grid>
-                <br />
-                <Row>
-                    <Col md={3}><ChartSpecForm /></Col>
-                    <Col md={9}><Chart aggregation={this.props.currentAggregation} spec={this.props.chartSpec} /></Col>
-                </Row>
-            </Grid>
+function _ChartContainer(props, context) {
+    return (
+        <Grid>
+            <br />
+            <Row>
+               <Col md={3}><ChartSpecForm /></Col>
+               <Col md={9}><Chart aggregation={props.currentAggregation} spec={props.chartSpec} /></Col>
+            </Row>
+        </Grid>
 
-        );
-    }
+    );
 }
 
 export const ChartContainer = connect((state) => (
     {
-        currentCube: state.cubes.currentCube,
         currentAggregation: state.aggregation,
         chartSpec: state.chartSpec
     }
