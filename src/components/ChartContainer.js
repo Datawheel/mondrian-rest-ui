@@ -5,12 +5,12 @@ import { Grid, Row, Col, Well, FormGroup, InputGroup, FormControl, Glyphicon } f
 
 import { values, map, fromPairs, keys } from 'lodash';
 import vegaEmbed from 'vega-embed';
+import { vegaLite as vegaTooltip } from 'vega-tooltip';
 
 import { setSpecField, setMarkType } from '../redux/reducers/chartSpec';
 import { toVegaShorthand, shortHandToVegaLite, transformForVega } from '../lib/vega-utils';
 
 import '../css/ChartContainer.css';
-
 
 const FIELD_TYPES_FUNCS = {
     quantitative: [
@@ -220,12 +220,18 @@ class Chart extends Component {
 
         vegaEmbed(
             this._vegaContainer,
+            vls,
             {
-                mode: 'vega-lite',
-                spec: vls
+                mode: 'vega-lite'
+            },
+            (error, result) => {
+                vegaTooltip(result.view, vls, {});
             }
         );
+    }
 
+    shouldComponentUpdate(nextProps, nextState) {
+        return this.props.spec !== nextProps.spec;
     }
 
     componentDidUpdate() {

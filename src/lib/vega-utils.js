@@ -6,8 +6,6 @@ export const normalizeFieldName = memoize((fn) => fn.replace(' ', '_'));
 export function toVegaShorthand(spec) {
     if (!spec || (!spec.x && !spec.y)) return '';
 
-    console.log('spec', spec);
-
     const sh = map(toPairs(spec).filter(v => v[0] !== 'mark' && !isNull(v[1])),
                    (v) => `${v[0]}=${v[1].vegaFunction ? v[1].vegaFunction + '_' : ''}${normalizeFieldName(v[1].name)},${v[1].variableType === 'drillDown' ? 'N' : 'Q'}`
                   ).join('|');
