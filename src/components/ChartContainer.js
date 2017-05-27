@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent, Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Grid, Row, Col, Well, FormGroup, InputGroup, FormControl, Glyphicon } from 'react-bootstrap';
@@ -199,7 +199,7 @@ const ChartSpecForm = connect(state => ({
     currentAggregation: state.aggregation
 }))(_ChartSpecForm);
 
-class Chart extends Component {
+class Chart extends PureComponent {
 
     updateChart() {
         let vls = shortHandToVegaLite(toVegaShorthand(this.props.spec));
