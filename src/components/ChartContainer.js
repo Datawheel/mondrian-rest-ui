@@ -7,7 +7,7 @@ import { values, map, fromPairs, keys } from 'lodash';
 import vegaEmbed from 'vega-embed';
 import { vegaLite as vegaTooltip } from 'vega-tooltip';
 
-import { setSpecField, setMarkType } from '../redux/reducers/chartSpec';
+import { setSpecField, setMarkType, clearSpecField } from '../redux/reducers/chartSpec';
 import { toVegaShorthand, shortHandToVegaLite, transformForVega } from '../lib/vega-utils';
 
 import '../css/ChartContainer.css';
@@ -103,7 +103,7 @@ function VariableSelect(props) {
                 <FieldOptions field={props.field} fieldSpec={props.fieldSpec} />
                 <InputGroup.Addon>{props.field}</InputGroup.Addon>
                 <FormControl componentClass="select" placeholder="select" onChange={props.onChange}>
-                    <option></option>
+                    <option value=""></option>
                     {props.dimensions.map((v,i) => <option key={i} value={'drillDown--'+v.name}>{v.hierarchy.dimension.caption } / {v.caption} (N)</option>)}
                     {props.measures.map((v,i) => <option key={i} value={'measure--'+v.name}>{v.caption} (#)</option>)}
                 </FormControl>
@@ -148,32 +148,43 @@ class _ChartSpecForm extends Component {
                                         fieldSpec={chartSpec[p]} dimensions={agg.drillDowns || []}
                                         measures={values(agg.measures) || []}
                                         onChange={(e) => {
-                                                const d = e.target.value.split('--');
-                                                this.onFieldSelectorChange(p, fields[d[0]][d[1]], d[0]);
+                                                if (e.target.value === "") {
+                                                    this.props.dispatch(clearSpecField(p));
+                                                }
+                                                else {
+                                                    const d = e.target.value.split('--');
+                                                    this.onFieldSelectorChange(p, fields[d[0]][d[1]], d[0]);
+                                                }
                                             }} />
                     )
                 }
 
-                        <div className="markSelectorContainer">
-                            <h5>Marks</h5>
-                            <select onChange={e => this.props.dispatch(setMarkType(e.target.value))}>
-                                {
-                                    _ChartSpecForm.markTypes.map((mt,i) =>
-                                        <option key={i} value={mt}>{mt}</option>
-                                    )
-                                }
-                            </select>
-                        </div>
+                <div className="markSelectorContainer">
+                    <h5>Marks</h5>
+                    <select onChange={e => this.props.dispatch(setMarkType(e.target.value))}>
                         {
-                            _ChartSpecForm.markChannels.map((p,i) => (
-                                <VariableSelect key={i}
-                                                field={p}
-                                                fieldSpec={chartSpec[p]} dimensions={agg.drillDowns || []}
-                                                measures={values(agg.measures) || []}
-                                                onChange={(e) => {
-                                                        const d = e.target.value.split('--');
-                                                        this.onFieldSelectorChange(p, fields[d[0]][d[1]], d[0]);
-                                                    }} />
+                            _ChartSpecForm.markTypes.map((mt,i) =>
+                                <option key={i} value={mt}>{mt}</option>
+                            )
+                        }
+                    </select>
+                </div>
+                {
+                    _ChartSpecForm.markChannels.map((p,i) => (
+                        <VariableSelect key={i}
+                                        field={p}
+                                        fieldSpec={chartSpec[p]} dimensions={agg.drillDowns || []}
+                                        measures={values(agg.measures) || []}
+                                        onChange={(e) => {
+                                                if (e.target.value === "") {
+                                                    this.props.dispatch(clearSpecField(p));
+                                                }
+                                                else {
+                                                    const d = e.target.value.split('--');
+                                                    this.onFieldSelectorChange(p, fields[d[0]][d[1]], d[0]);
+                                                    
+                                                }
+                                            }} />
 
                     ))
                 }
