@@ -137,15 +137,17 @@ function clientCall(dispatch, getState) {
 
     return mondrianClient.query(query)
         .then(agg => {
+            const aggregation = new Aggregation(agg);
             dispatch({
                 type: AGGREGATION_LOADED,
-                aggregation: new Aggregation(agg)
+                aggregation: aggregation
             });
         })
         .catch(err => {
             // when aggregation failed, undo two last actions:
             //  - AGGREGATION_LOADING
             //  - change of drilldown, measure or cut
+            console.log("CATCH", state);
             dispatch(ActionCreators.jump(-2));
             // ...also, set error state
             dispatch({

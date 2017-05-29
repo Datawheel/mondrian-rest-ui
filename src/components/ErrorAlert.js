@@ -30,7 +30,6 @@ class ErrorAlert extends Component {
         }
     }
 
-
     render() {
         if (this.state.visible) {
             return (

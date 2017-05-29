@@ -4,11 +4,14 @@
 
 .alert h5 {
     margin: 0;
+    font-size: 16px;
+    color: #a94442;
+    font-weight: bold;
 }
 
 .alert button.moreless {
     border: 0;
-    background-color: rgba(0,0,0,0.2);
+    background-color: transparent;
     margin-left: 10px;
     outline: 0;
 }
