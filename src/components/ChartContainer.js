@@ -196,7 +196,7 @@ class _ChartSpecForm extends Component {
 const ChartSpecForm = connect(state => ({
     currentCube: state.cubes.currentCube,
     chartSpec: state.chartSpec,
-    currentAggregation: state.aggregation
+    currentAggregation: state.aggregation.present
 }))(_ChartSpecForm);
 
 class Chart extends PureComponent {
@@ -274,7 +274,7 @@ function _ChartContainer(props, context) {
 
 export const ChartContainer = connect((state) => (
     {
-        currentAggregation: state.aggregation,
+        currentAggregation: state.aggregation.present,
         chartSpec: state.chartSpec
     }
 ))(_ChartContainer);

@@ -12,6 +12,7 @@ import MeasuresSelector from './components/MeasuresSelector';
 import { ChartContainer } from './components/ChartContainer';
 import DebugModal from './components/DebugModal';
 import CutModal from './components/CutModal';
+import ErrorAlert from './components/ErrorAlert';
 
 import { removeDrilldown, removeCut } from './redux/reducers/aggregation';
 import { showModal } from './redux/reducers/modal';
@@ -51,6 +52,9 @@ class App extends Component {
             <div className="loader" />
           </div>
           <Grid>
+              <Row md={12}>
+                  <ErrorAlert />
+              </Row>
             <Row style={{paddingTop: '5px', paddingBottom: '5px'}}>
               <Col md={1}>
                 Drilldowns:
@@ -109,9 +113,9 @@ class App extends Component {
 const ConnectedApp = connect((state) => (
     {
         currentCube: state.cubes.currentCube,
-        drillDowns: state.aggregation.drillDowns,
-        cuts: state.aggregation.cuts,
-        loading: state.aggregation.loading
+        drillDowns: state.aggregation.present.drillDowns,
+        cuts: state.aggregation.present.cuts,
+        loading: state.aggregation.present.loading
     }
 ))(App);
 

@@ -43,7 +43,7 @@ function DebugModal(props) {
 export default connect((state) => (
     {
         modal: state.modal,
-        aggregation: state.aggregation,
+        aggregation: state.aggregation.present,
         chartSpec: state.chartSpec
     }
 ))(DebugModal);

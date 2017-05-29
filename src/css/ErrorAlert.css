@@ -1,0 +1,22 @@
+.alert {
+    color: #a94442;
+}
+
+.alert h5 {
+    margin: 0;
+}
+
+.alert button.moreless {
+    border: 0;
+    background-color: rgba(0,0,0,0.2);
+    margin-left: 10px;
+    outline: 0;
+}
+
+.alert p {
+    display: none;
+}
+
+.alert.showMore p {
+    display: block;
+}

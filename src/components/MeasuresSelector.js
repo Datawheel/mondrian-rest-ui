@@ -27,6 +27,6 @@ function MeasuresSelector(props) {
 export default connect((state) => (
     {
         currentCube: state.cubes.currentCube,
-        selectedMeasures: state.aggregation.measures
+        selectedMeasures: state.aggregation.present.measures
     }
 ))(MeasuresSelector);
