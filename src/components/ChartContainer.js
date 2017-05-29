@@ -5,10 +5,11 @@ import { Grid, Row, Col, Well, FormGroup, InputGroup, FormControl, Glyphicon } f
 
 import { values, map, fromPairs, keys } from 'lodash';
 import vegaEmbed from 'vega-embed';
-import { vegaLite as vegaTooltip } from 'vega-tooltip';
+import { vegaLite as vlTooltip } from 'vega-tooltip';
+
 
 import { setSpecField, setMarkType, clearSpecField } from '../redux/reducers/chartSpec';
-import { toVegaShorthand, shortHandToVegaLite, transformForVega } from '../lib/vega-utils';
+import { specToVegaLite, transformForVega } from '../lib/vega-utils';
 
 import '../css/ChartContainer.css';
 
@@ -201,28 +202,16 @@ const ChartSpecForm = connect(state => ({
 
 class Chart extends PureComponent {
 
-    updateChart() {
-        let vls = shortHandToVegaLite(toVegaShorthand(this.props.spec));
+  updateChart() {
 
-        // bail early if we can't generate a valid VL Spec
-        if (vls === '') {
-            return
-        }
+    if (this.props.aggregation.data === null) {
 
+        return;
+    }
+
+        let vls = specToVegaLite(this.props.spec);
         vls = {
             ...vls,
-            config: {
-                cell: {
-                    width: 400,
-                    height: 400
-                },
-                facet: {
-                    cell: {
-                        width: 400,
-                        height: 200
-                    }
-                }
-            },
             mark: this.props.spec.mark,
             data: {
                 values: transformForVega(this.props.aggregation.data.tidy())
@@ -236,7 +225,7 @@ class Chart extends PureComponent {
                 mode: 'vega-lite'
             },
             (error, result) => {
-                vegaTooltip(result.view, vls, {});
+                vlTooltip(result.view, vls, {});
             }
         );
     }

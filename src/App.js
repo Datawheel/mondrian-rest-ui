@@ -29,7 +29,7 @@ class App extends Component {
         <Navbar>
           <Navbar.Header>
             <Navbar.Brand>
-              <a href="#">mondrian-rest</a>
+              mondrian-rest
             </Navbar.Brand>
             <Navbar.Toggle />
           </Navbar.Header>
@@ -82,7 +82,6 @@ class App extends Component {
                          onClick={() => this.props.dispatch(showCutModal(cut.level))}>
                     {cut.level.hierarchy.dimension.name} / {cut.level.name}{ cut.cutMembers.length > 1 ? `(${cut.cutMembers.length})` : `: ${cut.cutMembers[0].caption}` }<Glyphicon className="remove" glyph="remove" style={{top: '2px', marginLeft: '5px'}} onClick={(e) => { this.props.dispatch(removeCut(cut.level)); e.stopPropagation(); }} /></Label>
                  )}
-        
               </Col>
             </Row>
             <Row style={{paddingTop: '5px', paddingBottom: '5px'}}>

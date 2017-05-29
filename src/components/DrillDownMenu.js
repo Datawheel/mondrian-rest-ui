@@ -15,7 +15,7 @@ export default function DrillDownMenu(props, context) {
     <DropdownButton bsSize="xsmall" title="Add Drilldown" id="dropdown-size-small" disabled={dimensions.length === 0} style={{marginRight: '10px' }}>
       {dimensions.map((d,i) =>
       <li key={i} className="dropdown-submenu">
-        <a tabIndex="-1" href="#">{d.name}</a>
+        <a tabIndex="-1">{d.name}</a>
         <ul className="dropdown-menu">
           {d.hierarchies[0]
           .levels
@@ -23,7 +23,7 @@ export default function DrillDownMenu(props, context) {
           .map((l,j) =>
           <li key={`${i}.${j}`}
               onClick={() => dispatch(addDrilldown(l))}>
-            <a tabIndex="-1" href="#">{ drillDowns.find(dd => dd === l) ? '✓ ' : ' ' }{l.name}</a>
+            <a tabIndex="-1">{ drillDowns.find(dd => dd === l) ? '✓ ' : ' ' }{l.name}</a>
           </li>
           )}
         </ul>
