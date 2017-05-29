@@ -21,8 +21,8 @@
     "url-join": "^1.1.0",
     "vega": "^2.6.3",
     "vega-embed": "^3.0.0-beta.14",
-    "vega-lite": "2.0.0-beta.3",
-    "vega-tooltip": "^0.3.3"
+    "vega-lite": "^1.2.0",
+    "vega-tooltip": "^0.4.0"
   },
   "scripts": {
     "start": "react-scripts start",

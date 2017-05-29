@@ -28,7 +28,7 @@ class App extends Component {
         <Navbar>
           <Navbar.Header>
             <Navbar.Brand>
-              <a href="#">mondrian-rest</a>
+              mondrian-rest
             </Navbar.Brand>
             <Navbar.Toggle />
           </Navbar.Header>
