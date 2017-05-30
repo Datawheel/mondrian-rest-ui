@@ -16,10 +16,10 @@
     outline: 0;
 }
 
-.alert p {
+.alert div#moreError {
     display: none;
 }
 
-.alert.showMore p {
+.alert.showMore div#moreError {
     display: block;
 }

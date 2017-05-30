@@ -30,14 +30,31 @@ class ErrorAlert extends Component {
         }
     }
 
+    renderError(error) {
+        if (error instanceof Array) {
+            return (<pre>{error.join("\n")}</pre>);
+        }
+        else if (error instanceof String) {
+            return (<span>{error}</span>);
+        }
+    }
+
     render() {
+        const { error } = this.props;
+
         if (this.state.visible) {
             return (
                 <Alert className={'alert' + (this.state.showMore ? ' showMore' : '')}
                        bsStyle="danger"
                        onDismiss={() => this.setState({visible: false})}>
-                  <h5>Error: <tt>{this.props.error.message}</tt><button className="moreless" onClick={() => this.setState({showMore: !this.state.showMore})}>[{this.state.showMore ? 'less' : 'more'}]</button></h5>
-                  <p>Sed diam. Fusce sagittis, libero non molestie mollis, magna orci ultrices dolor, at vulputate neque nulla lacinia eros.</p>
+                    <h5>Error: <tt>{error.message}</tt>
+                        <button className="moreless"
+                                onClick={() => this.setState({showMore: !this.state.showMore})}
+                                style={{visibility: error.error ? 'visible' : 'hidden'}}>
+                            [{this.state.showMore ? 'less' : 'more'}]
+                        </button>
+                    </h5>
+                  <div id="moreError">{this.renderError(this.props.error.error)}</div>
                 </Alert>);
         }
         return null;

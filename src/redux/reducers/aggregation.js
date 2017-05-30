@@ -133,28 +133,21 @@ function clientCall(dispatch, getState) {
                    query);
 
     // add options
-    query = query.option('nonempty', true).option('debug', true);
+    query = query
+        .option('nonempty', true)
+        .option('debug', true);
 
     return mondrianClient.query(query)
         .then(agg => {
             const aggregation = new Aggregation(agg);
-            dispatch({
-                type: AGGREGATION_LOADED,
-                aggregation: aggregation
-            });
-        })
-        .catch(err => {
-            // when aggregation failed, undo two last actions:
-            //  - AGGREGATION_LOADING
-            //  - change of drilldown, measure or cut
-            console.log("CATCH", state);
-            dispatch(ActionCreators.jump(-2));
-            // ...also, set error state
-            dispatch({
-                type: AGGREGATION_FAIL,
-                error: err
-            });
-        });
+            dispatch({ type: AGGREGATION_LOADED, aggregation: aggregation });
+        },
+              err => {
+                  // undo AGGREGATION
+                  dispatch(ActionCreators.jump(-2));
+                  // ...also, set error state
+                  dispatch({ type: AGGREGATION_FAIL, error: err });
+              });
 };
 
 export function addDrilldown(level) {
@@ -174,7 +167,7 @@ export function removeDrilldown(level) {
             level: level
         });
 
-        if (getState().aggregation.drillDowns.length > 0) {
+        if (getState().aggregation.present.drillDowns.length > 0) {
             clientCall(dispatch, getState);
         }
         else {
