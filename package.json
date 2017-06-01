@@ -11,7 +11,7 @@
     "mondrian-rest-client": "Datawheel/mondrian-rest-client#7da3aec7962dde8a4b40be41d61d56cd276d6e3a",
     "prop-types": "^15.5.10",
     "react": "^15.2.1",
-    "react-bootstrap": "^0.30.0",
+    "react-bootstrap": "^0.31.0",
     "react-dom": "^15.2.1",
     "react-redux": "^5.0.3",
     "redux": "^3.6.0",
