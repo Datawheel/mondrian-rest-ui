@@ -9,7 +9,7 @@ import DrillDownMenu from './components/DrillDownMenu';
 import CutMenu from './components/CutMenu';
 import DataTable from './components/DataTable';
 import MeasuresSelector from './components/MeasuresSelector';
-import { ChartContainer } from './components/ChartContainer';
+import ChartContainer from './components/ChartContainer';
 import DebugModal from './components/DebugModal';
 import CutModal from './components/CutModal';
 import ErrorAlert from './components/ErrorAlert';
@@ -21,7 +21,20 @@ import { showCutModal } from './redux/reducers/cutModal';
 import './css/App.css';
 
 class App extends Component {
-  render() {
+
+    hashChange() {
+        console.log('HASH CHANGE', window.location);
+    }
+
+    componentDidMount() {
+        window.addEventListener("hashchange", this.hashChange, false);
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener("hashchange", this.hashChange, false);
+    }
+
+    render() {
     return (
       <div className="App">
         <DebugModal />

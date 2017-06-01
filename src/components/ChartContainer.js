@@ -261,7 +261,7 @@ function _ChartContainer(props, context) {
     );
 }
 
-export const ChartContainer = connect((state) => (
+export default connect((state) => (
     {
         currentAggregation: state.aggregation.present,
         chartSpec: state.chartSpec
