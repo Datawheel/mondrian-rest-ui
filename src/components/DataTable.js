@@ -42,7 +42,7 @@ class DataTable extends Component{
                         {pager}
                     </Col>
                     <Col md={1} mdOffset={1} style={{textAlign: 'right'}}>
-                        <DropdownButton bsSize="large" title={<Glyphicon glyph="download"/>} bsStyle="link">
+                        <DropdownButton id="download-dropdownbutton" bsSize="large" title={<Glyphicon glyph="download"/>} bsStyle="link">
                             <MenuItem eventKey="1" href={aggregation.url.replace('/aggregate', '/aggregate.csv')}>CSV</MenuItem>
                             <MenuItem eventKey="2" href={aggregation.url.replace('/aggregate', '/aggregate.xls')}>Excel</MenuItem>
                         </DropdownButton>

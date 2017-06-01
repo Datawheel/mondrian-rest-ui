@@ -12,7 +12,7 @@ export default function CutMenu(props, context) {
     dimensions = cube ? cube.dimensions : [];
 
     return (
-        <DropdownButton title="Add Cut" bsSize="xsmall" disabled={isNull(cube)} style={{marginRight: '10px' }}>
+        <DropdownButton id="cutmenu-dropdown" title="Add Cut" bsSize="xsmall" disabled={isNull(cube)} style={{marginRight: '10px' }}>
             {dimensions.map((d,i) =>
             <li key={i} className="dropdown-submenu">
                 <a tabIndex="-1">{d.name}</a>

@@ -82,7 +82,7 @@ function FieldOptions(props, context) {
             <div className="fieldOptions">
                 <strong>type</strong>
                 <br />
-                <select value={props.fieldSpec ? props.fieldSpec.vegaVariableType : null}>
+                <select value={props.fieldSpec ? props.fieldSpec.vegaVariableType : undefined}>
                     {keys(FIELD_TYPES_FUNCS).map((ft, i) => <option key={i} value={ft}>{ft}</option>)}
                 </select>
                 <br />
