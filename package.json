@@ -7,9 +7,8 @@
     "redux-logger": "^2.6.1"
   },
   "dependencies": {
-    "immutability-helper": "^2.2.0",
     "lodash": "^4.14.1",
-    "mondrian-rest-client": "Datawheel/mondrian-rest-client#fe9381d9219c6243788e05e138cbd5f96cce9534",
+    "mondrian-rest-client": "Datawheel/mondrian-rest-client#7da3aec7962dde8a4b40be41d61d56cd276d6e3a",
     "prop-types": "^15.5.10",
     "react": "^15.2.1",
     "react-bootstrap": "^0.31.0",
@@ -17,9 +16,11 @@
     "react-redux": "^5.0.3",
     "redux": "^3.6.0",
     "redux-thunk": "^2.1.0",
+    "redux-undo": "^1.0.0-beta9-9",
     "vega": "^2.6.3",
-    "vega-embed": "^2.2.0",
-    "vega-lite": "^1.2.0"
+    "vega-embed": "^3.0.0-beta.14",
+    "vega-lite": "^1.2.0",
+    "vega-tooltip": "^0.4.0"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -1,4 +1,5 @@
 import { setMeasure, clearMeasures, clearDrildowns } from './aggregation';
+import { clearSpec } from './chartSpec.js';
 
 import { client } from '../../settings';
 
@@ -9,7 +10,7 @@ const SELECT_CUBE = 'mondrian/cubes/SELECT';
 
 const initialState = {
     cubes: [],
-    currentCube: null,
+    currentCube: null
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -61,6 +62,7 @@ export function selectCube(name) {
     return (dispatch, getState) => {
         dispatch(clearDrildowns());
         dispatch(clearMeasures());
+        dispatch(clearSpec());
         dispatch({
             type: SELECT_CUBE,
             name: name

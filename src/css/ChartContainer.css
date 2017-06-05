@@ -47,7 +47,6 @@
 /* from node_modules/vega-tooltip/src/vg-tooltip.css */
 
 .vg-tooltip {
-  display: none;
   padding: 6px;
   border-radius: 3px;
   position: fixed;

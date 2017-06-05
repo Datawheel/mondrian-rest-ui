@@ -1,28 +1,58 @@
-import { map, toPairs, isNull, memoize, flowRight, property, zipObject } from 'lodash';
-import vl from 'vega-lite';
+import { reduce, toPairs, fromPairs, isNull, property, zipObject } from 'lodash';
 
-export const normalizeFieldName = memoize((fn) => fn.replace(' ', '_'));
 
-export function toVegaShorthand(spec) {
-    if (!spec || (!spec.x && !spec.y)) return '';
+const VEGA_LITE_TEMPLATE = {
+    "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+    config: {
+        cell: {
+            width: 400,
+            height: 400
+        },
+        facet: {
+            cell: {
+                width: 400,
+                height: 200
+            }
+        }
+    },
+    mark: "point",
+    data: {},
+    encoding: {}
+};
 
-    console.log('spec', spec);
+export function specToVegaLite(spec) {
+    if (!spec || (!spec.x && !spec.y)) return {};
 
-    const sh = map(toPairs(spec).filter(v => v[0] !== 'mark' && !isNull(v[1])),
-                   (v) => `${v[0]}=${v[1].vegaFunction ? v[1].vegaFunction + '_' : ''}${normalizeFieldName(v[1].name)},${v[1].variableType === 'drillDown' ? 'N' : 'Q'}`
-                  ).join('|');
+    const encoding = reduce(
+        toPairs(spec).filter(v => v[0] !== 'mark' && !isNull(v[1])),
+        (memo, [k, v]) => {
 
-    return `mark=${spec.mark || 'point'}|${sh}`;
-}
+            var enc = {
+                field: v.name,
+                type: v.variableType === 'drillDown' ? 'nominal' : 'quantitative'
+            };
 
-export function shortHandToVegaLite(sh) {
-    if (sh === '') return '';
-    return vl.shorthand.parse(sh);
+            if (v.vegaFunction) {
+                enc.aggregate = v.vegaFunction;
+            }
+
+            return {
+                ...memo,
+                ...fromPairs([[k, enc]])
+            };
+        },
+        {}
+    );
+
+    return {
+        ...VEGA_LITE_TEMPLATE,
+        encoding: encoding
+    };
 }
 
 export function transformForVega(tidyData) {
-    const keys = tidyData.axes.map(flowRight(normalizeFieldName, property('level')))
-              .concat(tidyData.measures.map(flowRight(normalizeFieldName, property('name')))),
+    const keys = tidyData.axes.map(property('level'))
+          .concat(tidyData.measures.map(property('name'))),
           nDrilldowns = tidyData.axes.length;
     return tidyData.data.map(
         (d) =>

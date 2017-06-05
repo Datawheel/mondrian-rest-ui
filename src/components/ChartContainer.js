@@ -1,16 +1,17 @@
-import React, { Component } from 'react';
+import React, { PureComponent, Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Grid, Row, Col, Well, FormGroup, InputGroup, FormControl, Glyphicon } from 'react-bootstrap';
 
 import { values, map, fromPairs, keys } from 'lodash';
 import vegaEmbed from 'vega-embed';
+import { vegaLite as vlTooltip } from 'vega-tooltip';
 
-import { setSpecField, setMarkType } from '../redux/reducers/chartSpec';
-import { toVegaShorthand, shortHandToVegaLite, transformForVega } from '../lib/vega-utils';
+
+import { setSpecField, setMarkType, clearSpecField } from '../redux/reducers/chartSpec';
+import { specToVegaLite, transformForVega } from '../lib/vega-utils';
 
 import '../css/ChartContainer.css';
-
 
 const FIELD_TYPES_FUNCS = {
     quantitative: [
@@ -81,7 +82,7 @@ function FieldOptions(props, context) {
             <div className="fieldOptions">
                 <strong>type</strong>
                 <br />
-                <select value={props.fieldSpec ? props.fieldSpec.vegaVariableType : null}>
+                <select value={props.fieldSpec ? props.fieldSpec.vegaVariableType : undefined}>
                     {keys(FIELD_TYPES_FUNCS).map((ft, i) => <option key={i} value={ft}>{ft}</option>)}
                 </select>
                 <br />
@@ -103,7 +104,7 @@ function VariableSelect(props) {
                 <FieldOptions field={props.field} fieldSpec={props.fieldSpec} />
                 <InputGroup.Addon>{props.field}</InputGroup.Addon>
                 <FormControl componentClass="select" placeholder="select" onChange={props.onChange}>
-                    <option></option>
+                    <option value=""></option>
                     {props.dimensions.map((v,i) => <option key={i} value={'drillDown--'+v.name}>{v.hierarchy.dimension.caption } / {v.caption} (N)</option>)}
                     {props.measures.map((v,i) => <option key={i} value={'measure--'+v.name}>{v.caption} (#)</option>)}
                 </FormControl>
@@ -148,32 +149,43 @@ class _ChartSpecForm extends Component {
                                         fieldSpec={chartSpec[p]} dimensions={agg.drillDowns || []}
                                         measures={values(agg.measures) || []}
                                         onChange={(e) => {
-                                                const d = e.target.value.split('--');
-                                                this.onFieldSelectorChange(p, fields[d[0]][d[1]], d[0]);
+                                                if (e.target.value === "") {
+                                                    this.props.dispatch(clearSpecField(p));
+                                                }
+                                                else {
+                                                    const d = e.target.value.split('--');
+                                                    this.onFieldSelectorChange(p, fields[d[0]][d[1]], d[0]);
+                                                }
                                             }} />
                     )
                 }
 
-                        <div className="markSelectorContainer">
-                            <h5>Marks</h5>
-                            <select onChange={e => this.props.dispatch(setMarkType(e.target.value))}>
-                                {
-                                    _ChartSpecForm.markTypes.map((mt,i) =>
-                                        <option key={i} value={mt}>{mt}</option>
-                                    )
-                                }
-                            </select>
-                        </div>
+                <div className="markSelectorContainer">
+                    <h5>Marks</h5>
+                    <select onChange={e => this.props.dispatch(setMarkType(e.target.value))}>
                         {
-                            _ChartSpecForm.markChannels.map((p,i) => (
-                                <VariableSelect key={i}
-                                                field={p}
-                                                fieldSpec={chartSpec[p]} dimensions={agg.drillDowns || []}
-                                                measures={values(agg.measures) || []}
-                                                onChange={(e) => {
-                                                        const d = e.target.value.split('--');
-                                                        this.onFieldSelectorChange(p, fields[d[0]][d[1]], d[0]);
-                                                    }} />
+                            _ChartSpecForm.markTypes.map((mt,i) =>
+                                <option key={i} value={mt}>{mt}</option>
+                            )
+                        }
+                    </select>
+                </div>
+                {
+                    _ChartSpecForm.markChannels.map((p,i) => (
+                        <VariableSelect key={i}
+                                        field={p}
+                                        fieldSpec={chartSpec[p]} dimensions={agg.drillDowns || []}
+                                        measures={values(agg.measures) || []}
+                                        onChange={(e) => {
+                                                if (e.target.value === "") {
+                                                    this.props.dispatch(clearSpecField(p));
+                                                }
+                                                else {
+                                                    const d = e.target.value.split('--');
+                                                    this.onFieldSelectorChange(p, fields[d[0]][d[1]], d[0]);
+                                                    
+                                                }
+                                            }} />
 
                     ))
                 }
@@ -185,33 +197,21 @@ class _ChartSpecForm extends Component {
 const ChartSpecForm = connect(state => ({
     currentCube: state.cubes.currentCube,
     chartSpec: state.chartSpec,
-    currentAggregation: state.aggregation
+    currentAggregation: state.aggregation.present
 }))(_ChartSpecForm);
 
-class Chart extends Component {
+class Chart extends PureComponent {
 
-    updateChart() {
-        let vls = shortHandToVegaLite(toVegaShorthand(this.props.spec));
+  updateChart() {
 
-        // bail early if we can't generate a valid VL Spec
-        if (vls === '') {
-            return
-        }
+    if (this.props.aggregation.data === null) {
 
+        return;
+    }
+
+        let vls = specToVegaLite(this.props.spec);
         vls = {
             ...vls,
-            config: {
-                cell: {
-                    width: 400,
-                    height: 400
-                },
-                facet: {
-                    cell: {
-                        width: 400,
-                        height: 200
-                    }
-                }
-            },
             mark: this.props.spec.mark,
             data: {
                 values: transformForVega(this.props.aggregation.data.tidy())
@@ -220,12 +220,18 @@ class Chart extends Component {
 
         vegaEmbed(
             this._vegaContainer,
+            vls,
             {
-                mode: 'vega-lite',
-                spec: vls
+                mode: 'vega-lite'
+            },
+            (error, result) => {
+                vlTooltip(result.view, vls, {});
             }
         );
+    }
 
+    shouldComponentUpdate(nextProps, nextState) {
+        return this.props.spec !== nextProps.spec;
     }
 
     componentDidUpdate() {
@@ -242,25 +248,22 @@ class Chart extends Component {
     }
 }
 
-class _ChartContainer extends Component {
-    render() {
-        return (
-            <Grid>
-                <br />
-                <Row>
-                    <Col md={3}><ChartSpecForm /></Col>
-                    <Col md={9}><Chart aggregation={this.props.currentAggregation} spec={this.props.chartSpec} /></Col>
-                </Row>
-            </Grid>
+function _ChartContainer(props, context) {
+    return (
+        <Grid>
+            <br />
+            <Row>
+               <Col md={3}><ChartSpecForm /></Col>
+               <Col md={9}><Chart aggregation={props.currentAggregation} spec={props.chartSpec} /></Col>
+            </Row>
+        </Grid>
 
-        );
-    }
+    );
 }
 
-export const ChartContainer = connect((state) => (
+export default connect((state) => (
     {
-        currentCube: state.cubes.currentCube,
-        currentAggregation: state.aggregation,
+        currentAggregation: state.aggregation.present,
         chartSpec: state.chartSpec
     }
 ))(_ChartContainer);

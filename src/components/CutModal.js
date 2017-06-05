@@ -88,6 +88,6 @@ class CutModal extends Component {
 export default connect((state) => (
     {
         cutModal: state.cutModal,
-        aggregation: state.aggregation
+        aggregation: state.aggregation.present
     }
 ))(CutModal);

@@ -1,6 +1,5 @@
-import { fromPairs, omit, compact, reduce } from 'lodash';
-import update from 'immutability-helper';
-
+import { fromPairs, omit, compact, reduce, includes } from 'lodash';
+import { ActionCreators } from 'redux-undo';
 
 import { client as mondrianClient } from '../../settings.js';
 import Aggregation from '../../lib/aggregation.js';
@@ -17,7 +16,6 @@ const MEASURE_CLEAR_ALL = 'mondrian/aggregation/MEASURE_CLEAR_ALL';
 const CUT_SET = 'mondrian/aggregation/CUT_SET';
 const CUT_REMOVED = 'mondrian/aggregation/CUT_REMOVED';
 const PROPERTY_SET = 'mondrian/aggregation/PROPERTY_SET';
-const PROPERTY_REMOVE = 'mondrian/aggregation/PROPERTY_REMOVE';
 
 const initialState = {
     drillDowns: [],
@@ -41,20 +39,32 @@ export default function reducer(state = initialState, action={}) {
                 error: null,
                 data: action.aggregation
             };
+
+        case AGGREGATION_FAIL:
+            return {
+                ...state,
+                loading: false,
+                loaded: true,
+                error: action.error
+            };
         case AGGREGATION_CLEAR:
             return {
                 ...state,
                 data: null
             };
         case DRILLDOWN_ADDED:
-            return update(state,
-                          {
-                              drillDowns: { $push: [action.level ]}
-                          });
+            return {
+                ...state,
+                drillDowns: state.drillDowns.concat(!includes(state.drillDowns, action.level) ? [action.level] : [])
+            };
         case DRILLDOWN_REMOVED:
             return {
                 ...state,
-                drillDowns: state.drillDowns.filter(l => l !== action.level)
+                drillDowns: state.drillDowns.filter(l => l !== action.level),
+                properties: omit(
+                    state.properties,
+                    [ action.level.hierarchy.dimension.name ]
+                )
             };
         case DRILLDOWN_CLEAR_ALL:
             return {
@@ -78,7 +88,7 @@ export default function reducer(state = initialState, action={}) {
                 cuts: omit(state.cuts, [action.level.fullName])
             };
         case PROPERTY_SET:
-            const { level, add, propertyName } = action;
+            const { propertyName } = action;
             const p = state.properties;
             const dn = action.level.hierarchy.dimension.name;
 
@@ -115,7 +125,7 @@ function memberKey(member) {
 
 function clientCall(dispatch, getState) {
     const state = getState(),
-          dds = compact(state.aggregation.drillDowns);
+          dds = compact(state.aggregation.present.drillDowns);
 
     if (dds.length === 0) {
         return null;
@@ -126,17 +136,17 @@ function clientCall(dispatch, getState) {
     });
 
     // add measures
-    let query = reduce(state.aggregation.measures,
+    let query = reduce(state.aggregation.present.measures,
                        (q, m, mn) => q.measure(m.name),
                        state.cubes.currentCube.query);
 
     // add drilldowns
-    query = reduce(state.aggregation.drillDowns,
+    query = reduce(state.aggregation.present.drillDowns,
                    (q, dd) => q.drilldown(dd.hierarchy.dimension.name, dd.hierarchy.name, dd.name),
                    query);
 
     // add cuts
-    query = reduce(state.aggregation.cuts,
+    query = reduce(state.aggregation.present.cuts,
                    (q, cut) => {
                        const cutExpr = (cut.cutMembers.length === 1) ? memberKey(cut.cutMembers[0]) : `{${cut.cutMembers.map(memberKey).join(',')}}`;
                        return q.cut(cutExpr);
@@ -144,10 +154,10 @@ function clientCall(dispatch, getState) {
                    query);
 
     // add properties
-    query = reduce(state.aggregation.properties,
+    query = reduce(state.aggregation.present.properties,
                    (q, props, dimName) => {
                        // find dimension of the level we're drilling down into
-                       const d = state.aggregation
+                       const d = state.aggregation.present
                              .drillDowns.find(dd => dd.hierarchy.dimension.name === dimName);
 
                        return reduce(Array.from(props),
@@ -157,20 +167,21 @@ function clientCall(dispatch, getState) {
                    query);
 
     // add options
-    query = query.option('nonempty', true).option('debug', true);
-
+    query = query
+        .option('nonempty', true)
+        .option('debug', true);
 
     return mondrianClient.query(query)
-                         .then(agg => {
-                             dispatch({
-                                 type: AGGREGATION_LOADED,
-                                 aggregation: new Aggregation(agg)
-                             });
-                         })
-                         .catch(err => dispatch({
-                             type: AGGREGATION_FAIL,
-                             error: err
-                         }));
+        .then(agg => {
+            const aggregation = new Aggregation(agg);
+            dispatch({ type: AGGREGATION_LOADED, aggregation: aggregation });
+        },
+              err => {
+                  // undo AGGREGATION
+                  dispatch(ActionCreators.jump(-2));
+                  // ...also, set error state
+                  dispatch({ type: AGGREGATION_FAIL, error: err });
+              });
 };
 
 export function addDrilldown(level) {
@@ -190,7 +201,7 @@ export function removeDrilldown(level) {
             level: level
         });
 
-        if (getState().aggregation.drillDowns.length > 0) {
+        if (getState().aggregation.present.drillDowns.length > 0) {
             clientCall(dispatch, getState);
         }
         else {

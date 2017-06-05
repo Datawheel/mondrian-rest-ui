@@ -1,7 +1,7 @@
 import React from 'react';
 import { isNull } from 'lodash';
 import PropTypes from 'prop-types';
-import { NavDropdown } from 'react-bootstrap';
+import { DropdownButton } from 'react-bootstrap';
 
 import { showCutModal } from '../redux/reducers/cutModal';
 import '../css/DrillDownMenu.css';
@@ -12,10 +12,10 @@ export default function CutMenu(props, context) {
     dimensions = cube ? cube.dimensions : [];
 
     return (
-        <NavDropdown title="Add Cut" disabled={isNull(cube)}>
+        <DropdownButton id="cutmenu-dropdown" title="Add Cut" bsSize="xsmall" disabled={isNull(cube)} style={{marginRight: '10px' }}>
             {dimensions.map((d,i) =>
             <li key={i} className="dropdown-submenu">
-                <a tabIndex="-1" href="#">{d.name}</a>
+                <a tabIndex="-1">{d.name}</a>
                 <ul className="dropdown-menu">
                     {d.hierarchies[0]
                     .levels
@@ -23,13 +23,13 @@ export default function CutMenu(props, context) {
                       .map((l,j) =>
                           <li key={`${i}.${j}`}
                               onClick={() => dispatch(showCutModal(l))}>
-                              <a tabIndex="-1" href="#">{l.name}</a>
+                              <a tabIndex="-1">{l.name}</a>
                           </li>
                     )}
                 </ul>
             </li>)
             }
-        </NavDropdown>
+        </DropdownButton>
     );
 }
 

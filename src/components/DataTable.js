@@ -46,105 +46,104 @@ function _PropertySelectorDropdown(props) {
 const PropertySelectorDropdown = connect(state => (
   {
     currentCube: state.cubes.currentCube,
-    aggregation: state.aggregation,
+    aggregation: state.aggregation.present,
   }
 ))(_PropertySelectorDropdown);
 
 
-function DataTable(props) {
-  const { aggregation, currentCube, dataTable, dispatch } = props;
-  let c;
+class DataTable extends Component{
 
-  if (!aggregation) {
-    c = (
-      <Grid>
-        <Row>
-          <Col md={12}><p>No Data</p></Col>
-        </Row>
-      </Grid>
-    );
-  }
-  else {
-    const agg = aggregation.tidy();
-    const cntDims = agg.axes.length;
-    const activePage = dataTable.page;
-    const pager = (agg.data.length > PAGE_SIZE ) ?
-                  <Pagination
-                      ellipsis
-                      boundaryLinks
-                      maxButtons={5}
-                      bsSize="small"
-                      items={Math.floor(agg.data.length / PAGE_SIZE) }
-                      activePage={activePage}
-                      onSelect={(eventKey) => dispatch(setPage(eventKey)) } /> : null;
+    render() {
+        const { aggregation, currentCube, dataTable } = this.props;
 
-    c = (
-      <Grid>
-        <Row>
-          <Col md={10}>
-            {pager}
-          </Col>
-          <Col md={1} mdOffset={1} style={{textAlign: 'right'}}>
-            <DropdownButton bsSize="large" title={<Glyphicon glyph="download"/>} bsStyle="link">
-              <MenuItem eventKey="1" href={aggregation.url.replace('/aggregate', '/aggregate.csv')}>CSV</MenuItem>
-              <MenuItem eventKey="2" href={aggregation.url.replace('/aggregate', '/aggregate.xls')}>Excel</MenuItem>
-            </DropdownButton>
-          </Col>
-        </Row>
-        <Row>
-          <Col md={12}>
-            <Table responsive striped bordered condensed hover>
-              <thead>
-                <tr>
-                  {agg.axes.map((a,i) => {
-                     const level = currentCube.dimensionsByName[a.name]
-                                              .hierarchies[0]
-                                              .getLevel(a.level);
-                     var propSelector = '';
-                     if (level.properties.length > 0) {
-                       propSelector = <PropertySelectorDropdown level={level} />;
-                     }
-                     return (<th key={i}>{a.caption}{propSelector}</th>);
-                   })}
-                  {agg.measures.map((m,i) => <th className="measureCell" key={i}>{m.caption}</th>)}
-                </tr>
-              </thead>
-              <tbody>
-                {agg.data.slice((activePage - 1) * PAGE_SIZE,
-                                (activePage - 1) * PAGE_SIZE + PAGE_SIZE)
-                    .map((row, i) => (
-                      <tr key={i}>
-                        {
-                          row.map((cell, j) =>
-                            <td key={j} className={j >= cntDims ? 'measureCell' : ''}>
-                              {j < cntDims ? cell.caption : (typeof(cell) === 'number' ? cell.toLocaleString() : cell)}
-                            </td>)
-                        }
-                      </tr>
-                    ))}
-              </tbody>
-            </Table>
-          </Col>
-        </Row>
-        <Row>
-          <Col md={12}>
-            {pager}
-          </Col>
-        </Row>
-      </Grid>
-    );
-  }
+        if (!aggregation) {
+            return (
+                <Grid>
+                    <Row>
+                        <Col md={12}><p>No Data</p></Col>
+                    </Row>
+                </Grid>
+            );
+        }
 
-  return c;
+        const agg = aggregation.tidy();
+        const cntDims = agg.axes.length;
+        const activePage = dataTable.page;
+        const pager = (agg.data.length > PAGE_SIZE ) ?
+                      <Pagination
+                          ellipsis
+                          boundaryLinks
+                          maxButtons={5}
+                          bsSize="small"
+                          items={Math.floor(agg.data.length / PAGE_SIZE) }
+                          activePage={activePage}
+                          onSelect={(eventKey) => this.props.dispatch(setPage(eventKey)) } /> : null;
+
+        return (
+            <Grid>
+                <Row>
+                    <Col md={10}>
+                        {pager}
+                    </Col>
+                    <Col md={1} mdOffset={1} style={{textAlign: 'right'}}>
+                        <DropdownButton id="download-dropdownbutton" bsSize="large" title={<Glyphicon glyph="download"/>} bsStyle="link">
+                            <MenuItem eventKey="1" href={aggregation.url.replace('/aggregate', '/aggregate.csv')}>CSV</MenuItem>
+                            <MenuItem eventKey="2" href={aggregation.url.replace('/aggregate', '/aggregate.xls')}>Excel</MenuItem>
+                        </DropdownButton>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col md={12}>
+                        <Table responsive striped bordered condensed hover>
+                            <thead>
+                                <tr>
+                                    {agg.axes.map((a,i) => {
+                                         const level = currentCube.dimensionsByName[a.name]
+                                                                  .hierarchies[0]
+                                                                  .getLevel(a.level);
+                                         var propSelector = '';
+                                         if (level.properties.length > 0) {
+                                             propSelector = <PropertySelectorDropdown level={level} />;
+                                         }
+                                         return (<th key={i}>{a.caption}{propSelector}</th>);
+                                     })}
+                                    {agg.measures.map((m,i) => <th className="measureCell" key={i}>{m.caption}</th>)}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {agg.data.slice((activePage - 1) * PAGE_SIZE,
+                                                (activePage - 1) * PAGE_SIZE + PAGE_SIZE)
+                                    .map((row, i) => (
+                                        <tr key={i}>
+                                            {
+                                                row.map((cell, j) =>
+                                                    <td key={j} className={j >= cntDims ? 'measureCell' : ''}>
+                                                        {j < cntDims ? cell.caption : (typeof(cell) === 'number' ? cell.toLocaleString() : cell)}
+                                                    </td>)
+                                            }
+                                        </tr>
+                                    ))}
+                            </tbody>
+                        </Table>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col md={12}>
+                        {pager}
+                    </Col>
+                </Row>
+            </Grid>
+        );
+    }
 }
 
 
 export default connect(state => (
-  {
-    currentCube: state.cubes.currentCube,
-    aggregation: state.aggregation.data,
-    dataTable: state.dataTable
-  }
+    {
+        aggregation: state.aggregation.present.data,
+        dataTable: state.dataTable,
+        currentCube: state.cubes.currentCube
+    }
 ))(DataTable)
 
 // Local Variables:

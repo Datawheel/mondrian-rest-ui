@@ -6,9 +6,11 @@ import dataTable from './dataTable';
 import modal from './modal';
 import cutModal from './cutModal';
 
+import undoable from 'redux-undo';
+
 export default combineReducers({
     cubes: cubes,
-    aggregation: aggregation,
+    aggregation: undoable(aggregation),
     chartSpec: chartSpec,
     dataTable: dataTable,
     modal: modal,
