@@ -116,7 +116,7 @@ class DataTable extends Component{
 
                                          h.push(
                                              <th key={i}>
-                                                 {a.caption}{propSelector}
+                                                 {a.caption} / {level.name} {propSelector}
                                              </th>
                                          );
 
