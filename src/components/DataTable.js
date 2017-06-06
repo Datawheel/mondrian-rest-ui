@@ -16,38 +16,38 @@ import '../css/DataTable.css';
  */
 function _PropertySelectorDropdown(props) {
 
-  const { level, dispatch, aggregation } = props;
+    const { level, dispatch, aggregation } = props;
 
-  function onChange(event, propertyName) {
-    dispatch(setProperty(level, propertyName, event.target.checked));
-  }
+    function onChange(event, propertyName) {
+        dispatch(setProperty(level, propertyName, event.target.checked));
+    }
 
-  var selectedProps = new Set();
-  if (level.hierarchy.dimension.name in aggregation.properties) {
-    selectedProps = aggregation.properties[level.hierarchy.dimension.name];
-  }
+    var selectedProps = new Set();
+    if (level.hierarchy.dimension.name in aggregation.properties) {
+        selectedProps = aggregation.properties[level.hierarchy.dimension.name];
+    }
 
-  return (
-    <DropdownButton bsSize="small" title={<Glyphicon glyph="align-justify"/>} bsStyle="link">
-      {
-        level.properties.map((pname, i) => {
-          return (<MenuItem key={i} eventKey={i}>
-          <Checkbox
-             checked={selectedProps.has(pname)}
-             onChange={partialRight(onChange, pname)}
-             inline>{pname}</Checkbox>
-          </MenuItem>);
-        })
-      }
-    </DropdownButton>
-  );
+    return (
+        <DropdownButton bsSize="small" title={<Glyphicon glyph="align-justify"/>} bsStyle="link">
+            {
+                level.properties.map((pname, i) => {
+                    return (<MenuItem key={i} eventKey={i}>
+                        <Checkbox
+                            checked={selectedProps.has(pname)}
+                            onChange={partialRight(onChange, pname)}
+                            inline>{pname}</Checkbox>
+                    </MenuItem>);
+                })
+            }
+        </DropdownButton>
+    );
 }
 
 const PropertySelectorDropdown = connect(state => (
-  {
-    currentCube: state.cubes.currentCube,
-    aggregation: state.aggregation.present,
-  }
+    {
+        currentCube: state.cubes.currentCube,
+        aggregation: state.aggregation.present,
+    }
 ))(_PropertySelectorDropdown);
 
 
@@ -101,7 +101,7 @@ class DataTable extends Component{
                                          const level = currentCube.dimensionsByName[a.name]
                                                                   .hierarchies[0]
                                                                   .getLevel(a.level);
-                                         var propSelector = '';
+                                         var propSelector = null;
                                          if (level.properties.length > 0) {
                                              propSelector = <PropertySelectorDropdown level={level} />;
                                          }
@@ -116,9 +116,9 @@ class DataTable extends Component{
                                     .map((row, i) => (
                                         <tr key={i}>
                                             {
-                                                row.map((cell, j) =>
-                                                    <td key={j} className={j >= cntDims ? 'measureCell' : ''}>
-                                                        {j < cntDims ? cell.caption : (typeof(cell) === 'number' ? cell.toLocaleString() : cell)}
+                                                row.map((cell, dimIdx) =>
+                                                    <td key={dimIdx} className={dimIdx >= cntDims ? 'measureCell' : ''}>
+                                                        {dimIdx < cntDims ? cell.caption : (typeof(cell) === 'number' ? cell.toLocaleString() : cell)}
                                                     </td>)
                                             }
                                         </tr>
@@ -147,5 +147,5 @@ export default connect(state => (
 ))(DataTable)
 
 // Local Variables:
-// js2-basic-offset: 4
+// js2-basic-offset: 2
 // End:

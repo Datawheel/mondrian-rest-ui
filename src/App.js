@@ -9,7 +9,7 @@ import DrillDownMenu from './components/DrillDownMenu';
 import CutMenu from './components/CutMenu';
 import DataTable from './components/DataTable';
 import MeasuresSelector from './components/MeasuresSelector';
-import ChartContainer from './components/ChartContainer';
+import ChartContainer from './components/Chart/ChartContainer';
 import DebugModal from './components/DebugModal';
 import CutModal from './components/CutModal';
 import ErrorAlert from './components/ErrorAlert';
