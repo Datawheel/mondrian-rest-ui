@@ -19,7 +19,22 @@ const VEGA_LITE_TEMPLATE = {
     encoding: {}
 };
 
-export function specToVegaLite(spec) {
+function transformForVega(aggregation) {
+    const tidyData = aggregation.data.tidy();
+    const keys = tidyData.axes.map(property('level'))
+          .concat(tidyData.measures.map(property('name'))),
+          nDrilldowns = tidyData.axes.length;
+
+    return tidyData.data.map(
+        (d) =>
+            zipObject(keys,
+                      d.slice(0,nDrilldowns).map(property('caption'))
+                      .concat(d.slice(nDrilldowns)))
+    );
+}
+
+
+export function specToVegaLite(spec, aggregation) {
     if (!spec || (!spec.x && !spec.y)) return {};
 
     const encoding = reduce(
@@ -45,20 +60,11 @@ export function specToVegaLite(spec) {
 
     return {
         ...VEGA_LITE_TEMPLATE,
-        encoding: encoding
+        encoding: encoding,
+        mark: spec.mark,
+        data: {
+            values: transformForVega(aggregation)
+        }
     };
 }
 
-export function transformForVega(aggregation) {
-    const tidyData = aggregation.data.tidy();
-    const keys = tidyData.axes.map(property('level'))
-          .concat(tidyData.measures.map(property('name'))),
-          nDrilldowns = tidyData.axes.length;
-
-    return tidyData.data.map(
-        (d) =>
-            zipObject(keys,
-                      d.slice(0,nDrilldowns).map(property('caption'))
-                      .concat(d.slice(nDrilldowns)))
-    );
-}

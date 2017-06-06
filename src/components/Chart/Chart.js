@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { vegaLite as vlTooltip } from 'vega-tooltip';
 import vegaEmbed from 'vega-embed';
 
-import { specToVegaLite, transformForVega } from '../../lib/vega-utils';
+import { specToVegaLite } from '../../lib/vega-utils';
 
 export default class Chart extends PureComponent {
 
@@ -12,16 +12,7 @@ export default class Chart extends PureComponent {
             return;
         }
 
-        let vls = specToVegaLite(this.props.spec);
-        vls = {
-            ...vls,
-            mark: this.props.spec.mark,
-            data: {
-                values: transformForVega(this.props.aggregation)
-            }
-        };
-
-        console.log(vls.data.values);
+        const vls = specToVegaLite(this.props.spec, this.props.aggregation);
 
         vegaEmbed(
             this._vegaContainer,
