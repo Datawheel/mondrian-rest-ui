@@ -17,9 +17,11 @@ export default class Chart extends PureComponent {
             ...vls,
             mark: this.props.spec.mark,
             data: {
-                values: transformForVega(this.props.aggregation.data.tidy())
+                values: transformForVega(this.props.aggregation)
             }
         };
+
+        console.log(vls.data.values);
 
         vegaEmbed(
             this._vegaContainer,
