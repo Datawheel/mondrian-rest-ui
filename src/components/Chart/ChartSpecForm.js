@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Well, FormGroup, InputGroup, FormControl, Glyphicon } from 'react-bootstrap';
@@ -125,77 +125,74 @@ const markChannels = [
     'size', 'color', 'shape', 'detail', 'text'
 ];
 
-class _ChartSpecForm extends Component {
+function _ChartSpecForm(props)  {
 
-
-    onFieldSelectorChange(field, variable, variableType) {
-        this.props.dispatch(setSpecField(field, variable, variableType))
+    function onFieldSelectorChange(field, variable, variableType) {
+        props.dispatch(setSpecField(field, variable, variableType))
     }
 
-    render() {
-        const agg = this.props.currentAggregation,
-              chartSpec = this.props.chartSpec || {},
-              fields = {
-                  drillDown: fromPairs(map((agg.drillDowns || []).map(d => [d.name, d]))),
-                  measure: agg.measures || {}
-              };
+    const agg = props.currentAggregation,
+          chartSpec = props.chartSpec || {},
+          fields = {
+              drillDown: fromPairs(map((agg.drillDowns || []).map(d => [d.name, d]))),
+              measure: agg.measures || {}
+          };
 
-        return (
-            <Well>
-                <h5>Positional</h5>
-                {
-                    positionalChannels.map((p,i) =>
-                        <VariableSelect key={i}
-                                        field={p}
-                                        fieldSpec={chartSpec[p]}
-                                        dimensions={agg.drillDowns || []}
-                                        properties={agg.properties || {}}
-                                        measures={values(agg.measures) || []}
-                                        onChange={(e) => {
-                                                if (e.target.value === "") {
-                                                    this.props.dispatch(clearSpecField(p));
-                                                }
-                                                else {
-                                                    const d = e.target.value.split('--');
-                                                    this.onFieldSelectorChange(p, fields[d[0]][d[1]], d[0]);
-                                                }
-                                            }} />
-                    )
-                }
+    return (
+        <Well>
+            <h5>Positional</h5>
+            {
+                positionalChannels.map((p,i) =>
+                    <VariableSelect key={i}
+                                    field={p}
+                                    fieldSpec={chartSpec[p]}
+                                    dimensions={agg.drillDowns || []}
+                                    properties={agg.properties || {}}
+                                    measures={values(agg.measures) || []}
+                                    onChange={(e) => {
+                                            if (e.target.value === "") {
+                                                props.dispatch(clearSpecField(p));
+                                            }
+                                            else {
+                                                const d = e.target.value.split('--');
+                                                onFieldSelectorChange(p, fields[d[0]][d[1]], d[0]);
+                                            }
+                                        }} />
+                )
+            }
 
-                <div className="markSelectorContainer">
-                    <h5>Marks</h5>
-                    <select onChange={e => this.props.dispatch(setMarkType(e.target.value))}>
-                        {
-                            markTypes.map((mt,i) =>
-                                <option key={i} value={mt}>{mt}</option>
-                            )
-                        }
-                    </select>
-                </div>
-                {
-                    markChannels.map((p,i) => (
-                        <VariableSelect key={i}
-                                        field={p}
-                                        fieldSpec={chartSpec[p]}
-                                        dimensions={agg.drillDowns || []}
-                                        properties={agg.properties || {}}
-                                        measures={values(agg.measures) || []}
-                                        onChange={(e) => {
-                                                if (e.target.value === "") {
-                                                    this.props.dispatch(clearSpecField(p));
-                                                }
-                                                else {
-                                                    const d = e.target.value.split('--');
-                                                    this.onFieldSelectorChange(p, fields[d[0]][d[1]], d[0]);
-                                                }
-                                            }} />
+            <div className="markSelectorContainer">
+                <h5>Marks</h5>
+                <select onChange={e => props.dispatch(setMarkType(e.target.value))}>
+                    {
+                        markTypes.map((mt,i) =>
+                            <option key={i} value={mt}>{mt}</option>
+                        )
+                    }
+                </select>
+            </div>
+            {
+                markChannels.map((p,i) => (
+                    <VariableSelect key={i}
+                                    field={p}
+                                    fieldSpec={chartSpec[p]}
+                                    dimensions={agg.drillDowns || []}
+                                    properties={agg.properties || {}}
+                                    measures={values(agg.measures) || []}
+                                    onChange={(e) => {
+                                            if (e.target.value === "") {
+                                                props.dispatch(clearSpecField(p));
+                                            }
+                                            else {
+                                                const d = e.target.value.split('--');
+                                                onFieldSelectorChange(p, fields[d[0]][d[1]], d[0]);
+                                            }
+                                        }} />
 
-                    ))
-                }
-            </Well>
-        );
-    }
+                ))
+            }
+        </Well>
+    );
 }
 
 export default connect(state => ({

@@ -7,7 +7,6 @@ import { specToVegaLite } from '../../lib/vega-utils';
 export default class Chart extends PureComponent {
 
     updateChart() {
-
         if (this.props.aggregation.data === null) {
             return;
         }
@@ -21,13 +20,10 @@ export default class Chart extends PureComponent {
                 mode: 'vega-lite'
             },
             (error, result) => {
-                vlTooltip(result.view, vls, {});
+                if (result)
+                    vlTooltip(result.view, vls, {});
             }
         );
-    }
-
-    shouldComponentUpdate(nextProps, nextState) {
-        return this.props.spec !== nextProps.spec;
     }
 
     componentDidUpdate() {

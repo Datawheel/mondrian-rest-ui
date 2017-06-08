@@ -1,4 +1,4 @@
-import { reduce, toPairs, fromPairs, isNull, property, zipObject } from 'lodash';
+import { reduce, toPairs, fromPairs, isNull, property, zipObject, flatMap } from 'lodash';
 
 const VEGA_LITE_TEMPLATE = {
     "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
@@ -21,9 +21,12 @@ const VEGA_LITE_TEMPLATE = {
 
 function transformForVega(aggregation) {
     const tidyData = aggregation.data.tidy();
+    console.log('tidy', aggregation);
     const keys = tidyData.axes.map(property('level'))
           .concat(tidyData.measures.map(property('name'))),
           nDrilldowns = tidyData.axes.length;
+
+    
 
     return tidyData.data.map(
         (d) =>
