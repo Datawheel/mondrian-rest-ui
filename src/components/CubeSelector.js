@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { FormControl } from 'react-bootstrap';
 import Select from 'react-select';
 
 import { loadCubes, selectCube } from '../redux/reducers/cubes';
