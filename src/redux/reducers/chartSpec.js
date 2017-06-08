@@ -26,18 +26,21 @@ const VT_TO_VEGAVT = {
 export default function reducer(state = initialState, action={}) {
     switch(action.type) {
         case SPEC_FIELD_SET:
-            return Object.assign({},
-                                 state,
-                                 fromPairs([
-                                     [
-                                         action.key,
-                                         {
-                                             ...action.variable,
-                                             variableType: action.variableType,
-                                             vegaVariableType: VT_TO_VEGAVT[action.variableType]
-                                         }
-                                     ]
-                                 ]));
+            return {
+                ...state,
+                ...(
+                    fromPairs([
+                        [
+                            action.key,
+                            {
+                                ...action.variable,
+                                variableType: action.variableType,
+                                vegaVariableType: VT_TO_VEGAVT[action.variableType]
+                            }
+                        ]
+                    ])
+                )
+            };
         case SPEC_FIELD_CLEAR:
             const c = {}; c[action.key] = null;
             return {
