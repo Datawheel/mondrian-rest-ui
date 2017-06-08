@@ -183,7 +183,7 @@ class _ChartSpecForm extends Component {
                                                 else {
                                                     const d = e.target.value.split('--');
                                                     this.onFieldSelectorChange(p, fields[d[0]][d[1]], d[0]);
-                                                    
+
                                                 }
                                             }} />
 
@@ -202,17 +202,18 @@ const ChartSpecForm = connect(state => ({
 
 class Chart extends PureComponent {
 
-  updateChart() {
+    updateChart() {
 
-    if (this.props.aggregation.data === null) {
+        if (this.props.aggregation.data === null) {
 
-        return;
-    }
+            return;
+        }
 
         let vls = specToVegaLite(this.props.spec);
         vls = {
             ...vls,
             mark: this.props.spec.mark,
+            width: this._vegaContainer.offsetWidth,
             data: {
                 values: transformForVega(this.props.aggregation.data.tidy())
             }
@@ -253,8 +254,8 @@ function _ChartContainer(props, context) {
         <Grid>
             <br />
             <Row>
-               <Col md={3}><ChartSpecForm /></Col>
-               <Col md={9}><Chart aggregation={props.currentAggregation} spec={props.chartSpec} /></Col>
+                <Col md={3}><ChartSpecForm /></Col>
+                <Col md={9}><Chart aggregation={props.currentAggregation} spec={props.chartSpec} /></Col>
             </Row>
         </Grid>
 
