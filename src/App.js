@@ -47,13 +47,9 @@ class App extends Component {
             <Navbar.Toggle />
           </Navbar.Header>
           <Navbar.Collapse>
-            <Nav>
-              <Navbar.Form pullLeft>
-                <FormGroup>
+            <Nav pullLeft>
                   <CubeSelector />
-                </FormGroup>
                 {' '}
-              </Navbar.Form>
             </Nav>
             <Nav pullRight>
               <NavItem disabled={this.props.loading || isNull(this.props.currentCube)} eventKey={1} href="#" onClick={() => this.props.dispatch(showModal())}>Debug</NavItem>
