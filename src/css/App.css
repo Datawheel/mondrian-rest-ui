@@ -1,6 +1,11 @@
+.navbar {
+    border-radius: 0px !important;
+}
+
 .pill {
   font-size: 14px;
   font-weight: normal;
+  margin-right: 5px;
 }
 
 .pill:hover {
