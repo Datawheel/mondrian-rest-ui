@@ -5,6 +5,7 @@ import Select from 'react-select';
 import { loadCubes, selectCube } from '../redux/reducers/cubes';
 
 import 'react-select/dist/react-select.css';
+import '../css/CubeSelector.css';
 
 class CubeSelector extends Component {
 
@@ -18,7 +19,7 @@ class CubeSelector extends Component {
 
     render() {
         return (
-            <li style={{width: '200px', height: '64px', position: 'relative', top: '15px'}}>
+            <li className="Select-container condensed" style={{height: '64px', position: 'relative', top: '15px' }}>
                 <Select name="cube-select"
                         value={this.props.currentCube ? this.props.currentCube.name : null }
                         options={this.props.cubes.map(c => ({ value: c.name, label: c.name }))}
