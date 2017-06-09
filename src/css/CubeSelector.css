@@ -1,0 +1,33 @@
+.Select-container.condensed .Select .Select-control {
+    width: 200px;
+}
+.Select-container.condensed:not(.multi) .Select .Select-value,
+.Select-container.condensed .Select .Select-placeholder {
+    position: static;
+    display: table-cell;
+    padding-right: 0;
+}
+.Select-container.condensed .Select .Select-loading-zone {
+    padding-left: 5px;
+}
+.Select-container.condensed:not(.multi) .Select .Select-value ~ .Select-input,
+.Select-container.condensed .Select .Select-placeholder ~ .Select-input {
+    position: absolute;
+    left: 0;
+}
+.Select-container.condensed .Select .Select-menu-outer {
+    width: auto;
+    min-width: 100%;
+}
+.Select-container.condensed .Select .Select-menu {
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.Select-container.condensed:not(.multi) .Select .Select-option {
+    white-space: nowrap;
+    padding-right: 25px; /* absolute positioning scrollbar fix */
+}
+.Select-container.condensed.multi .Select .Select-multi-value-wrapper {
+    display: initial;
+    position: initial;
+}

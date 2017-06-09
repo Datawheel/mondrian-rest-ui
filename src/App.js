@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { isNull, map } from 'lodash';
 
-import { Grid, Row, Col, Nav, Navbar, NavItem, FormGroup,  Label, Glyphicon, Tabs, Tab } from 'react-bootstrap';
+import { Grid, Row, Col, Nav, Navbar, NavItem,  Label, Glyphicon, Tabs, Tab } from 'react-bootstrap';
 
 import CubeSelector from './components/CubeSelector';
 import DrillDownMenu from './components/DrillDownMenu';
@@ -47,13 +47,9 @@ class App extends Component {
             <Navbar.Toggle />
           </Navbar.Header>
           <Navbar.Collapse>
-            <Nav>
-              <Navbar.Form pullLeft>
-                <FormGroup>
+            <Nav pullLeft>
                   <CubeSelector />
-                </FormGroup>
                 {' '}
-              </Navbar.Form>
             </Nav>
             <Nav pullRight>
               <NavItem disabled={this.props.loading || isNull(this.props.currentCube)} eventKey={1} href="#" onClick={() => this.props.dispatch(showModal())}>Debug</NavItem>

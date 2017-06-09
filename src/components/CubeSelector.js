@@ -1,34 +1,39 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { FormControl } from 'react-bootstrap';
+import Select from 'react-select';
 
 import { loadCubes, selectCube } from '../redux/reducers/cubes';
+
+import 'react-select/dist/react-select.css';
+import '../css/CubeSelector.css';
 
 class CubeSelector extends Component {
 
     componentDidMount() {
-        let { dispatch } = this.props;
-        dispatch(loadCubes());
+        this.props.dispatch(loadCubes());
     }
 
-    onChange(event) {
-        this.props.dispatch(selectCube(event.target.value));
+    onChange(cube) {
+        this.props.dispatch(selectCube(cube.value));
     }
 
     render() {
         return (
-            <FormControl componentClass="select"
-                         placeholder="select"
-                         onChange={this.onChange.bind(this)}>
-                <option value={''} disabled selected>Select cube…</option>
-                {this.props.cubes.map(c => <option key={c.name}>{c.name}</option>)}
-            </FormControl>
+            <li className="Select-container condensed" style={{height: '64px', position: 'relative', top: '15px' }}>
+                <Select name="cube-select"
+                        value={this.props.currentCube ? this.props.currentCube.name : null }
+                        options={this.props.cubes.map(c => ({ value: c.name, label: c.name }))}
+                        clearable={false}
+                        placeholder="Select cube…"
+                        onChange={this.onChange.bind(this)} />
+            </li>
         );
     }
 }
 
 export default connect((state) => (
     {
-        cubes: state.cubes.cubes
+        cubes: state.cubes.cubes,
+        currentCube: state.cubes.currentCube
     }
 ))(CubeSelector);
