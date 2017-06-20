@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { isNull, map } from 'lodash';
+import { map } from 'lodash';
 
-import { Grid, Row, Col, Nav, Navbar, NavItem,  Label, Glyphicon, Tabs, Tab } from 'react-bootstrap';
+import { Grid, Row, Col, Label, Glyphicon, Tabs, Tab } from 'react-bootstrap';
 
-import CubeSelector from './components/CubeSelector';
 import DrillDownMenu from './components/DrillDownMenu';
 import CutMenu from './components/CutMenu';
 import DataTable from './components/DataTable';
@@ -13,9 +12,9 @@ import ChartContainer from './components/ChartContainer';
 import DebugModal from './components/DebugModal';
 import CutModal from './components/CutModal';
 import ErrorAlert from './components/ErrorAlert';
+import Nav from './components/Nav.js';
 
 import { removeDrilldown, removeCut } from './redux/reducers/aggregation';
-import { showModal } from './redux/reducers/modal';
 import { showCutModal } from './redux/reducers/cutModal';
 
 import './css/App.css';
@@ -39,29 +38,13 @@ class App extends Component {
       <div className="App">
         <DebugModal />
         <CutModal />
-        <Navbar>
-          <Navbar.Header>
-            <Navbar.Brand>
-              mondrian-rest
-            </Navbar.Brand>
-            <Navbar.Toggle />
-          </Navbar.Header>
-          <Navbar.Collapse>
-            <Nav pullLeft>
-                  <CubeSelector />
-                {' '}
-            </Nav>
-            <Nav pullRight>
-              <NavItem disabled={this.props.loading || isNull(this.props.currentCube)} eventKey={1} href="#" onClick={() => this.props.dispatch(showModal())}>Debug</NavItem>
-            </Nav>
-          </Navbar.Collapse>
-        </Navbar>
+        <Nav loading={this.props.loading} currentCube={this.props.currentCube} dispatch={this.props.dispatch} />
         <div className="container" style={{position: 'relative'}}>
           <div className="loading-overlay" style={{visibility: this.props.loading ? 'visible' : 'hidden' }}>
             <div className="loader" />
           </div>
           <Grid>
-              <Row md={12}>
+              <Row>
                   <ErrorAlert />
               </Row>
             <Row style={{paddingTop: '5px', paddingBottom: '5px'}}>
@@ -75,7 +58,6 @@ class App extends Component {
                          bsStyle="primary"
                          key={i}>{dd.hierarchy.dimension.name} / {dd.name}<Glyphicon className="remove" glyph="remove" style={{top: '2px', marginLeft: '5px'}} onClick={() => this.props.dispatch(removeDrilldown(dd))} /></Label>
                  )}
-        
               </Col>
             </Row>
             <Row style={{paddingTop: '5px', paddingBottom: '5px'}}>
@@ -107,7 +89,9 @@ class App extends Component {
                   <Tab eventKey={1} title="Data">
                     <DataTable />
                   </Tab>
-                  <Tab eventKey={2} title="Chart"><ChartContainer /></Tab>
+                  <Tab eventKey={2} title="Chart">
+                    <ChartContainer />
+                  </Tab>
                 </Tabs>
               </Col>
             </Row>
