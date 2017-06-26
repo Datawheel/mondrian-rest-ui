@@ -52,8 +52,8 @@ class DataTable extends Component{
                     <Col md={12}>
                         <Table responsive striped bordered condensed hover>
                             <thead>
-                                <tr>
-                                    {agg.axes.map((a,i) => <th key={i}>{a.caption}</th>)}
+                              <tr>
+                                    {agg.axes.map((a,i) => <th key={i}>{a.name} / {a.caption}</th>)}
                                     {agg.measures.map((m,i) => <th className="measureCell" key={i}>{m.caption}</th>)}
                                 </tr>
                             </thead>
