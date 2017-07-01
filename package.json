@@ -3,12 +3,12 @@
   "version": "0.0.1",
   "private": true,
   "devDependencies": {
-    "react-scripts": "1.0.0",
+    "react-scripts": "^1.0.0",
     "redux-logger": "^2.6.1"
   },
   "dependencies": {
     "lodash": "^4.14.1",
-    "mondrian-rest-client": "Datawheel/mondrian-rest-client#7da3aec7962dde8a4b40be41d61d56cd276d6e3a",
+    "mondrian-rest-client": "Datawheel/mondrian-rest-client#df9d6c28abb0112a5a46ff791c57473bba3078c8",
     "prop-types": "^15.5.10",
     "react": "^15.2.1",
     "react-bootstrap": "^0.31.0",
