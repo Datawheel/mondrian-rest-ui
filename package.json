@@ -18,7 +18,6 @@
     "redux": "^3.6.0",
     "redux-thunk": "^2.1.0",
     "redux-undo": "^1.0.0-beta9-9",
-    "url-join": "^1.1.0",
     "vega-embed": "^3.0.0-beta.18",
     "vega-lite": "^2.0.0-beta.4",
     "vega-tooltip": "^0.4.0"
