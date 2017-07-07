@@ -16,6 +16,7 @@ const MEASURE_SET = 'mondrian/aggregation/MEASURE_SET';
 const MEASURE_CLEAR_ALL = 'mondrian/aggregation/MEASURE_CLEAR_ALL';
 const CUT_SET = 'mondrian/aggregation/CUT_SET';
 const CUT_REMOVED = 'mondrian/aggregation/CUT_REMOVED';
+const CUT_CLEAR_ALL = 'mondrian/aggregation/CUT_CLEAR_ALL';
 
 const initialState = {
     drillDowns: [],
@@ -82,6 +83,11 @@ export default function reducer(state = initialState, action={}) {
             return {
                 ...state,
                 cuts: omit(state.cuts, [action.level.fullName])
+            };
+        case CUT_CLEAR_ALL:
+            return {
+                ...state,
+                cuts: []
             };
         case MEASURE_SET:
             return {
@@ -204,6 +210,12 @@ export function removeCut(level) {
         });
         clientCall(dispatch, getState);
     };
+}
+
+export function clearCuts() {
+  return {
+    type: CUT_CLEAR_ALL
+  };
 }
 
 export function setMeasure(measure, add) {

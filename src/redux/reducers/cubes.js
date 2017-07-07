@@ -1,4 +1,4 @@
-import { setMeasure, clearMeasures, clearDrildowns } from './aggregation';
+import { setMeasure, clearMeasures, clearDrildowns, clearCuts } from './aggregation';
 import { clearSpec } from './chartSpec.js';
 
 import { client } from '../../settings';
@@ -63,6 +63,7 @@ export function selectCube(name) {
         dispatch(clearDrildowns());
         dispatch(clearMeasures());
         dispatch(clearSpec());
+        dispatch(clearCuts());
         dispatch({
             type: SELECT_CUBE,
             name: name
