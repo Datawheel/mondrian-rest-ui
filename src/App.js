@@ -52,7 +52,7 @@ class App extends Component {
                 Drilldowns:
               </Col>
               <Col md={11}>
-                <DrillDownMenu disabled={this.props.loading} drillDowns={this.props.drillDowns} cube={this.props.currentCube} />
+                <DrillDownMenu disabled={this.props.loading} drillDowns={this.props.drillDowns} cube={this.props.currentCube} dispatch={this.props.dispatch} />
                 {this.props.drillDowns.map((dd, i) =>
                   <Label className="pill"
                          bsStyle="primary"
