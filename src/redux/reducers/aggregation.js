@@ -5,6 +5,8 @@ import { ActionCreators } from 'redux-undo';
 import { client as mondrianClient } from '../../settings.js';
 import Aggregation from '../../lib/aggregation.js';
 
+import { showSpinner, hideSpinner } from './spinner.js';
+
 const DRILLDOWN_ADDED = 'mondrian/aggregation/DRILLDOWN_ADDED';
 const DRILLDOWN_REMOVED = 'mondrian/aggregation/DRILLDOWN_REMOVED';
 const DRILLDOWN_CLEAR_ALL = 'mondrian/aggregation/DRILLDOWN_CLEAR_ALL';
@@ -26,11 +28,6 @@ const initialState = {
 
 export default function reducer(state = initialState, action={}) {
     switch(action.type) {
-        case AGGREGATION_LOADING:
-            return {
-                ...state,
-                loading: true
-            };
         case AGGREGATION_LOADED:
             return {
                 ...state,
@@ -120,6 +117,9 @@ function clientCall(dispatch, getState) {
         type: AGGREGATION_LOADING
     });
 
+    dispatch(showSpinner());
+
+
     // add measures
     let query = reduce(state.aggregation.present.measures,
                        (q, m, mn) => q.measure(m.name),
@@ -147,12 +147,14 @@ function clientCall(dispatch, getState) {
         .then(agg => {
             const aggregation = new Aggregation(agg);
             dispatch({ type: AGGREGATION_LOADED, aggregation: aggregation });
+            dispatch(hideSpinner());
         },
               err => {
                   // undo AGGREGATION
                   dispatch(ActionCreators.jump(-2));
                   // ...also, set error state
                   dispatch({ type: AGGREGATION_FAIL, error: err });
+                  dispatch(hideSpinner());
               });
 };
 
@@ -181,6 +183,7 @@ export function removeDrilldown(level) {
                 type: AGGREGATION_LOADED,
                 aggregation: null
             });
+            dispatch(hideSpinner());
         }
     };
 }
@@ -234,3 +237,4 @@ export function clearMeasures() {
         type: MEASURE_CLEAR_ALL
     };
 }
+

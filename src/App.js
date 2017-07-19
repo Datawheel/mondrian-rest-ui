@@ -103,12 +103,12 @@ class App extends Component {
 }
 
 const ConnectedApp = connect((state) => (
-    {
-        currentCube: state.cubes.currentCube,
-        drillDowns: state.aggregation.present.drillDowns,
-        cuts: state.aggregation.present.cuts,
-        loading: state.aggregation.present.loading
-    }
+  {
+    currentCube: state.cubes.currentCube,
+    drillDowns: state.aggregation.present.drillDowns,
+    cuts: state.aggregation.present.cuts,
+    loading: state.spinner.show,
+  }
 ))(App);
 
 export default ConnectedApp;
