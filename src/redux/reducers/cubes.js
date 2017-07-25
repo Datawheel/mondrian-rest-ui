@@ -3,10 +3,13 @@ import { clearSpec } from './chartSpec.js';
 
 import { client } from '../../settings';
 
+import { showSpinner, hideSpinner } from './spinner.js';
+
 const LOAD_CUBES = 'mondrian/cubes/LOAD';
 const LOAD_CUBES_SUCCESS = 'mondrian/cubes/SUCCESS';
 const LOAD_CUBES_FAIL = 'mondrian/cubes/FAIL';
 const SELECT_CUBE = 'mondrian/cubes/SELECT';
+
 
 const initialState = {
     cubes: [],
@@ -50,10 +53,12 @@ export default function reducer(state = initialState, action = {}) {
 export function loadCubes() {
     return (dispatch, getState) => {
         dispatch({ type: LOAD_CUBES });
+        dispatch(showSpinner());
         return client.cubes()
                      .then(cubes =>
                          {
                              dispatch({type: LOAD_CUBES_SUCCESS, result: cubes });
+                             dispatch(hideSpinner());
                          });
     };
 }
