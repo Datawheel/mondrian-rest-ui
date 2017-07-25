@@ -3,6 +3,11 @@ table.table thead th {
   border-bottom-width: 3px;
 }
 
+table.table thead th:hover {
+  background-color: #f9f9f9;
+  cursor: pointer;
+}
+
 
 .measureCell {
   text-align: right;
