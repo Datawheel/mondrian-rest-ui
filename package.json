@@ -20,7 +20,8 @@
     "redux-undo": "^1.0.0-beta9-9",
     "vega-embed": "3.0.0-beta.18",
     "vega-lite": "^2.0.0-beta.4",
-    "vega-tooltip": "^0.4.0"
+    "vega-tooltip": "^0.4.0",
+    "react-jsonschema-form": "^0.49.0"
   },
   "scripts": {
     "start": "react-scripts start",

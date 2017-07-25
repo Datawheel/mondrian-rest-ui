@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { map } from 'lodash';
 
 import { Grid, Row, Col, Label, Glyphicon, Tabs, Tab } from 'react-bootstrap';
+import Form from "react-jsonschema-form";
 
 import DrillDownMenu from './components/DrillDownMenu';
 import CutMenu from './components/CutMenu';
@@ -19,6 +20,8 @@ import { showCutModal } from './redux/reducers/cutModal';
 
 import './css/App.css';
 
+const vegaLiteJSONSchema = require('vega-lite/build/vega-lite-schema.json');
+
 class App extends Component {
 
     hashChange() {
@@ -33,7 +36,7 @@ class App extends Component {
         window.removeEventListener("hashchange", this.hashChange, false);
     }
 
-    render() {
+  render() {
     return (
       <div className="App">
         <DebugModal />
@@ -44,9 +47,9 @@ class App extends Component {
             <div className="loader" />
           </div>
           <Grid>
-              <Row>
-                  <ErrorAlert />
-              </Row>
+            <Row>
+              <ErrorAlert />
+            </Row>
             <Row style={{paddingTop: '5px', paddingBottom: '5px'}}>
               <Col md={1}>
                 Drilldowns:
@@ -91,6 +94,9 @@ class App extends Component {
                   </Tab>
                   <Tab eventKey={2} title="Chart">
                     <ChartContainer />
+                  </Tab>
+                  <Tab eventKey={3} title="Vega Form">
+                    <Form schema={vegaLiteJSONSchema} />
                   </Tab>
                 </Tabs>
               </Col>
