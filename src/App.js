@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { map } from 'lodash';
 
-import { Grid, Row, Col, Label, Glyphicon, Tabs, Tab, DropdownButton, MenuItem } from 'react-bootstrap';
+import { Grid, Row, Col, Label, Glyphicon, Tabs, Tab, OverlayTrigger, Button, Popover } from 'react-bootstrap';
+import ClipboardButton from 'react-clipboard.js';
+
 
 import DrillDownMenu from './components/DrillDownMenu';
 import CutMenu from './components/CutMenu';
@@ -26,13 +28,23 @@ function ShareButton(props) {
   const { currentCube, aggregation } = props;
   const hash = serializeAggregationParams(currentCube, aggregation);
 
-  const { origin, pathname } = window.location;
+    const { origin, pathname } = window.location;
+    const url = `${origin}${pathname}#${hash}`;
 
-  return (
-    <DropdownButton  onSelect={() => null} id="download-dropdownbutton" bsSize="small" title={<Glyphicon glyph="share"/>} bsStyle="link">
-      <MenuItem><input type="text" value={`${origin}${pathname}/#${hash}`}/></MenuItem>
-    </DropdownButton>
-  );
+    const popover = (
+        <Popover>
+            <input type="text" value={url} />
+            <ClipboardButton data-clipboard-text={`${origin}${pathname}#${hash}`}>
+                <Glyphicon glyph="copy" />
+            </ClipboardButton>
+        </Popover>
+    );
+
+    return (
+        <OverlayTrigger trigger="click" placement="bottom" overlay={popover}>
+            <Button  bsStyle="primary"><Glyphicon glyph="share" /></Button>
+        </OverlayTrigger>
+    );
 }
 
 class App extends Component {
