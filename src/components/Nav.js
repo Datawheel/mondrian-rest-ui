@@ -4,6 +4,7 @@ import { isNull } from 'lodash';
 
 import CubeSelector from './CubeSelector';
 import { showModal } from '../redux/reducers/modal';
+import { SITE_TITLE } from '../settings';
 
 export default function(props) {
 
@@ -11,7 +12,7 @@ export default function(props) {
     <Navbar>
       <Navbar.Header>
         <Navbar.Brand>
-          mondrian-rest
+          { SITE_TITLE }
         </Navbar.Brand>
         <Navbar.Toggle />
       </Navbar.Header>
