@@ -2,16 +2,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Select from 'react-select';
 
-import { loadCubes, selectCube } from '../redux/reducers/cubes';
+import { selectCube } from '../redux/reducers/cubes';
 
 import 'react-select/dist/react-select.css';
 import '../css/CubeSelector.css';
 
 class CubeSelector extends Component {
-
-    componentDidMount() {
-        this.props.dispatch(loadCubes());
-    }
 
     onChange(cube) {
         this.props.dispatch(selectCube(cube.value));
