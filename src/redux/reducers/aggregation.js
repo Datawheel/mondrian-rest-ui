@@ -158,13 +158,15 @@ function clientCall(dispatch, getState) {
               });
 };
 
-export function addDrilldown(level) {
+export function addDrilldown(level, doCall=true) {
     return (dispatch, getState) => {
         dispatch({ // optimistic add
             type: DRILLDOWN_ADDED,
             level: level
         });
-        clientCall(dispatch, getState);
+        if (doCall) {
+            return clientCall(dispatch, getState);
+        }
     };
 }
 
@@ -176,7 +178,7 @@ export function removeDrilldown(level) {
         });
 
         if (getState().aggregation.present.drillDowns.length > 0) {
-            clientCall(dispatch, getState);
+            return clientCall(dispatch, getState);
         }
         else {
             dispatch({
@@ -194,14 +196,16 @@ export function clearDrildowns() {
     };
 }
 
-export function setCut(cutMembers, level) {
+export function setCut(cutMembers, level, doCall=true) {
     return (dispatch, getState) => {
         dispatch({
             type: CUT_SET,
             cutMembers: cutMembers,
             level: level
         });
-        clientCall(dispatch, getState);
+        if (doCall) {
+            return clientCall(dispatch, getState);    
+        }
     };
 }
 
@@ -211,7 +215,7 @@ export function removeCut(level) {
             type: CUT_REMOVED,
             level: level
         });
-        clientCall(dispatch, getState);
+        return clientCall(dispatch, getState);
     };
 }
 
@@ -221,14 +225,16 @@ export function clearCuts() {
   };
 }
 
-export function setMeasure(measure, add) {
+export function setMeasure(measure, add, doCall=true) {
     return (dispatch, getState) => {
         dispatch({ // optimistic set
             type: MEASURE_SET,
             measure: measure,
             add: add
         });
-        clientCall(dispatch, getState);
+        if (doCall) {
+            return clientCall(dispatch, getState);
+        }
     };
 }
 

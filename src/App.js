@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { map } from 'lodash';
 
-import { Grid, Row, Col, Label, Glyphicon, Tabs, Tab } from 'react-bootstrap';
+import { Grid, Row, Col, Label, Glyphicon, Tabs, Tab, DropdownButton, MenuItem } from 'react-bootstrap';
 
 import DrillDownMenu from './components/DrillDownMenu';
 import CutMenu from './components/CutMenu';
@@ -14,50 +14,101 @@ import CutModal from './components/CutModal';
 import ErrorAlert from './components/ErrorAlert';
 import Nav from './components/Nav.js';
 
-import { removeDrilldown, removeCut } from './redux/reducers/aggregation';
+import { removeDrilldown, removeCut, addDrilldown, setMeasure, clearMeasures } from './redux/reducers/aggregation';
 import { showCutModal } from './redux/reducers/cutModal';
+import { loadCubes, selectCube } from './redux/reducers/cubes';
+
+import { serializeAggregationParams } from './lib/url-utils';
 
 import './css/App.css';
 
+function ShareButton(props) {
+  const { currentCube, aggregation } = props;
+  const hash = serializeAggregationParams(currentCube, aggregation);
+
+  const { origin, pathname } = window.location;
+
+  return (
+    <DropdownButton  onSelect={() => null} id="download-dropdownbutton" bsSize="small" title={<Glyphicon glyph="share"/>} bsStyle="link">
+      <MenuItem><input type="text" value={`${origin}${pathname}/#${hash}`}/></MenuItem>
+    </DropdownButton>
+  );
+}
+
 class App extends Component {
 
-    hashChange() {
-        console.log('HASH CHANGE', window.location);
-    }
+  hashChange() {
+    const urlState = JSON.parse(atob(window.location.hash.slice(1)));
 
-    componentDidMount() {
-        window.addEventListener("hashchange", this.hashChange, false);
-    }
+    const { dispatch } = this.props;
 
-    componentWillUnmount() {
-        window.removeEventListener("hashchange", this.hashChange, false);
-    }
+    dispatch(loadCubes())
+      .then(cubes => dispatch(selectCube(urlState.cube)))
+      .then(() => {
+        const { currentCube } = this.props;
 
-    render() {
+        // drilldown on the provided levels
+        urlState.drillDowns.forEach(([dimName, hierName, lvlName]) => {
+          const level = currentCube
+                            .dimensionsByName[dimName]
+                            .getHierarchy(hierName)
+                            .getLevel(lvlName);
+          dispatch(addDrilldown(level, false));
+        });
+
+        // select the provided measures
+        dispatch(clearMeasures());
+        urlState.measures.forEach(msrName => {
+          dispatch(setMeasure(currentCube.findMeasure(msrName), true, false));
+        });
+
+        // set the provided cuts
+      });
+  }
+
+  componentDidMount() {
+    window.addEventListener("hashchange", this.hashChange, false);
+    if (window.location.hash !== "") {
+      this.hashChange();
+    }
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("hashchange", this.hashChange, false);
+  }
+
+  render() {
+
+    const { loading, currentCube, dispatch, aggregation } = this.props,
+    { drillDowns, cuts } = aggregation;
+
     return (
       <div className="App">
         <DebugModal />
         <CutModal />
-        <Nav loading={this.props.loading} currentCube={this.props.currentCube} dispatch={this.props.dispatch} />
+        <Nav loading={loading} currentCube={currentCube} dispatch={dispatch} />
         <div className="container" style={{position: 'relative'}}>
-          <div className="loading-overlay" style={{visibility: this.props.loading ? 'visible' : 'hidden' }}>
+          <div className="loading-overlay" style={{visibility: loading ? 'visible' : 'hidden' }}>
             <div className="loader" />
           </div>
           <Grid>
-              <Row>
-                  <ErrorAlert />
-              </Row>
+            <Row>
+              <ErrorAlert />
+            </Row>
             <Row style={{paddingTop: '5px', paddingBottom: '5px'}}>
               <Col md={1}>
                 Drilldowns:
               </Col>
-              <Col md={11}>
-                <DrillDownMenu disabled={this.props.loading} drillDowns={this.props.drillDowns} cube={this.props.currentCube} dispatch={this.props.dispatch} />
-                {this.props.drillDowns.map((dd, i) =>
+              <Col md={10}>
+                <DrillDownMenu disabled={loading} drillDowns={drillDowns} cube={currentCube} dispatch={dispatch} />
+                {drillDowns.map((dd, i) =>
                   <Label className="pill"
                          bsStyle="primary"
-                         key={i}>{dd.hierarchy.dimension.name} / {dd.name}<Glyphicon className="remove" glyph="remove" style={{top: '2px', marginLeft: '5px'}} onClick={() => this.props.dispatch(removeDrilldown(dd))} /></Label>
+                         key={i}>{dd.hierarchy.dimension.name} / {dd.name}<Glyphicon className="remove" glyph="remove" style={{top: '2px', marginLeft: '5px'}} onClick={() => dispatch(removeDrilldown(dd))} /></Label>
                  )}
+              </Col>
+              <Col md={1}>
+                <ShareButton currentCube={currentCube} aggregation={aggregation} />
               </Col>
             </Row>
             <Row style={{paddingTop: '5px', paddingBottom: '5px'}}>
@@ -65,13 +116,13 @@ class App extends Component {
                 Cuts:
               </Col>
               <Col md={11}>
-                <CutMenu disabled={this.props.loading} cube={this.props.currentCube} />
-                {map(this.props.cuts, (cut, level, i) =>
+                <CutMenu disabled={loading} cube={currentCube} />
+                {map(cuts, (cut, level, i) =>
                   <Label className="pill"
                          bsStyle="primary"
                          key={level}
-                         onClick={() => this.props.dispatch(showCutModal(cut.level))}>
-                    {cut.level.hierarchy.dimension.name} / {cut.level.name}{ cut.cutMembers.length > 1 ? `(${cut.cutMembers.length})` : `: ${cut.cutMembers[0].caption}` }<Glyphicon className="remove" glyph="remove" style={{top: '2px', marginLeft: '5px'}} onClick={(e) => { this.props.dispatch(removeCut(cut.level)); e.stopPropagation(); }} /></Label>
+                         onClick={() => dispatch(showCutModal(cut.level))}>
+                    {cut.level.hierarchy.dimension.name} / {cut.level.name}{ cut.cutMembers.length > 1 ? `(${cut.cutMembers.length})` : `: ${cut.cutMembers[0].caption}` }<Glyphicon className="remove" glyph="remove" style={{top: '2px', marginLeft: '5px'}} onClick={(e) => { dispatch(removeCut(cut.level)); e.stopPropagation(); }} /></Label>
                  )}
               </Col>
             </Row>
@@ -105,6 +156,7 @@ class App extends Component {
 const ConnectedApp = connect((state) => (
   {
     currentCube: state.cubes.currentCube,
+    aggregation: state.aggregation.present,
     drillDowns: state.aggregation.present.drillDowns,
     cuts: state.aggregation.present.cuts,
     loading: state.spinner.show,

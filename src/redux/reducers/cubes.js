@@ -59,6 +59,7 @@ export function loadCubes() {
                          {
                              dispatch({type: LOAD_CUBES_SUCCESS, result: cubes });
                              dispatch(hideSpinner());
+                             return cubes;
                          });
     };
 }
