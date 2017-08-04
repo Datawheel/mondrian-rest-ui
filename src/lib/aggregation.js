@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import {zip, reverse, range} from 'lodash';
 
 // from http://phrogz.net/lazy-cartesian-product
 // XXX convert it into an ES6 generator funcion
@@ -27,7 +27,7 @@ function tidyResponse(resp) {
           dimensions = resp.axis_dimensions.slice(1),
           prod = resp.axes.slice(1)
               .map(e => {
-                  return _.zip(e.members, _.range(e.members.length));
+                  return zip(e.members, range(e.members.length));
               }),
           values = resp.values,
           hasParents = ('axis_parents' in resp);
@@ -36,7 +36,7 @@ function tidyResponse(resp) {
 
     lazyProduct(prod, function() {
         const cell = Array.prototype.slice.call(arguments), // convert arguments to array
-              cidxs = _.reverse(cell.map((c) => c[1])),
+              cidxs = reverse(cell.map((c) => c[1])),
               cm = cell.map(
                   (c, i) => {
                       const c0 = c[0];
