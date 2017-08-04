@@ -149,11 +149,7 @@ export function clientCall(dispatch, getState) {
   query = reduce(
     state.aggregation.present.cuts,
     (q, cut) => {
-      const cutExpr =
-        cut.cutMembers.length === 1
-          ? memberKey(cut.cutMembers[0])
-          : `{${cut.cutMembers.map(memberKey).join(",")}}`;
-      return q.cut(cutExpr);
+      return q.cut(cutExpression(cut));
     },
     query
   );
@@ -274,4 +270,10 @@ export function clearMeasures() {
   return {
     type: MEASURE_CLEAR_ALL
   };
+}
+
+export function cutExpression(cut) {
+  return cut.cutMembers.length === 1
+    ? memberKey(cut.cutMembers[0])
+    : `{${cut.cutMembers.map(memberKey).join(",")}}`;
 }

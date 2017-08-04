@@ -34,8 +34,6 @@ export function serializeAggregationParams(cube, aggregation) {
     s.cube = cube.name;
   }
 
-  console.log(aggregation);
-
   // encoded as an array of [dimName, hierarchyName, levelName]
   if (aggregation.drillDowns.length > 0) {
     s.drillDowns = map(aggregation.drillDowns, dd => [
