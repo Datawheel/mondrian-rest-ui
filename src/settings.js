@@ -4,4 +4,4 @@ export const __API_ENDPOINT__ = process.env.REACT_APP_API_URL || 'http://localho
 export const client = new Client(__API_ENDPOINT__);
 export const PAGE_SIZE = 40;
 
-export const SITE_TITLE = 'mondrian-rest-ui';
+export const SITE_TITLE = process.env.SITE_TITLE || 'mondrian-rest-ui';
