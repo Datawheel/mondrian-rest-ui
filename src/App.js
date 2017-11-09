@@ -30,6 +30,8 @@ import { loadCubes, selectCube } from "./redux/reducers/cubes";
 import { client as mondrianClient } from "./settings";
 import { getAggregationParams } from "./lib/url-utils";
 
+import "./css/bootstrap.css";
+import "./css/custom.min.css";
 import "./css/App.css";
 
 function getLevel(cube, dimName, hierName, lvlName) {
