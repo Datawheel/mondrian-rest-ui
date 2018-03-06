@@ -19,7 +19,7 @@ export default function CutMenu(props, context) {
                 <ul className="dropdown-menu">
                     {d.hierarchies[0]
                     .levels
-                    .slice(1)
+                    .slice(d.hierarchies[0].allMemberName ? 1 : 0)
                       .map((l,j) =>
                           <li key={`${i}.${j}`}
                               onClick={() => dispatch(showCutModal(l))}>
