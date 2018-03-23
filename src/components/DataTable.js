@@ -70,7 +70,6 @@ function DataTable(props) {
   }
 
   const agg = aggregation.tidy();
-  console.log("TIDY", agg);
   const cntDims = agg.axes.length;
   const activePage = dataTable.page;
   const pager =

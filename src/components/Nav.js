@@ -5,7 +5,7 @@ import CubeSelector from "./CubeSelector";
 import { showModal } from "../redux/reducers/modal";
 import { SITE_TITLE } from "../settings";
 
-export default function(props) {
+function NavMenu(props) {
   return (
     <Navbar>
       <Navbar.Header>
@@ -30,3 +30,5 @@ export default function(props) {
     </Navbar>
   );
 }
+
+export default NavMenu;
