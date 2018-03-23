@@ -1,7 +1,11 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import Helmet from "react-helmet";
-import { map, filter, includes, property } from "lodash";
+
+import includes from "lodash/includes";
+import filter from "lodash/filter";
+import map from "lodash/map";
+import property from "lodash/property";
 
 import { Grid, Row, Col, Label, Glyphicon, Tabs, Tab } from "react-bootstrap";
 
@@ -122,7 +126,8 @@ class App extends Component {
         <div className="container" style={{ position: "relative" }}>
           <div
             className="loading-overlay"
-            style={{ visibility: loading ? "visible" : "hidden" }}>
+            style={{ visibility: loading ? "visible" : "hidden" }}
+          >
             <div className="loader" />
           </div>
           <Grid>
@@ -138,7 +143,7 @@ class App extends Component {
                   cube={currentCube}
                   dispatch={dispatch}
                 />
-                {drillDowns.map((dd, i) =>
+                {drillDowns.map((dd, i) => (
                   <Label className="pill" bsStyle="primary" key={i}>
                     {dd.hierarchy.dimension.name} / {dd.name}
                     <Glyphicon
@@ -148,7 +153,7 @@ class App extends Component {
                       onClick={() => dispatch(removeDrilldown(dd))}
                     />
                   </Label>
-                )}
+                ))}
               </Col>
               <Col md={1}>
                 <ShareButton
@@ -161,12 +166,13 @@ class App extends Component {
               <Col md={1}>Cuts:</Col>
               <Col md={11}>
                 <CutMenu disabled={loading} cube={currentCube} />
-                {map(cuts, (cut, level, i) =>
+                {map(cuts, (cut, level, i) => (
                   <Label
                     className="pill"
                     bsStyle="primary"
                     key={level}
-                    onClick={() => dispatch(showCutModal(cut.level))}>
+                    onClick={() => dispatch(showCutModal(cut.level))}
+                  >
                     {cut.level.hierarchy.dimension.name} / {cut.level.name}
                     {cut.cutMembers.length > 1
                       ? `(${cut.cutMembers.length})`
@@ -181,7 +187,7 @@ class App extends Component {
                       }}
                     />
                   </Label>
-                )}
+                ))}
               </Col>
             </Row>
             <Row style={{ paddingTop: "5px", paddingBottom: "5px" }}>

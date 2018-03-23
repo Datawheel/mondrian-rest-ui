@@ -1,4 +1,7 @@
-import { map, property, isString, isArray } from "lodash";
+import map from "lodash/map";
+import property from "lodash/property";
+import isString from "lodash/isString";
+import isArray from "lodash/isArray";
 
 export function aggregationLink(hash) {
   const { origin, pathname } = window.location;

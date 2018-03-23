@@ -1,5 +1,7 @@
-import { fromPairs, omit, compact, reduce } from "lodash";
-
+import reduce from "lodash/reduce";
+import compact from "lodash/compact";
+import omit from "lodash/omit";
+import fromPairs from "lodash/fromPairs";
 import { ActionCreators } from "redux-undo";
 
 import { client as mondrianClient } from "../../settings.js";
@@ -112,8 +114,9 @@ export default function reducer(state = initialState, action = {}) {
 }
 
 function memberKey(member) {
-  return `[${member.level.hierarchy.dimension.name}].[${member.level.hierarchy
-    .name}].[${member.level.name}].&[${member.key}]`;
+  return `[${member.level.hierarchy.dimension.name}].[${
+    member.level.hierarchy.name
+  }].[${member.level.name}].&[${member.key}]`;
 }
 
 export function clientCall(dispatch, getState) {

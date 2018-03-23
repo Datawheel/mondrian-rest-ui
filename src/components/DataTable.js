@@ -1,28 +1,56 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { Grid, Row, Col, Table, Pagination, DropdownButton, MenuItem, Glyphicon } from 'react-bootstrap';
-import { sortBy, reverse } from 'lodash';
+import React from "react";
+import { connect } from "react-redux";
+import {
+  Grid,
+  Row,
+  Col,
+  Table,
+  DropdownButton,
+  MenuItem,
+  Glyphicon
+} from "react-bootstrap";
 
-import { PAGE_SIZE } from '../settings';
-import { setPage, sortToggle } from '../redux/reducers/dataTable';
+import { Pagination } from "@react-bootstrap/pagination";
 
-import '../css/DataTable.css';
+import sortBy from "lodash/sortBy";
+import reverse from "lodash/reverse";
+
+import { PAGE_SIZE } from "../settings";
+import { setPage, sortToggle } from "../redux/reducers/dataTable";
+
+import "../css/DataTable.css";
 
 function DownloadMenu(props) {
   return (
-    <DropdownButton id="download-dropdownbutton" bsSize="large" title={<Glyphicon glyph="download"/>} bsStyle="link">
-      <MenuItem eventKey="1" href={props.aggregation.url.replace('/aggregate', '/aggregate.csv')}>CSV</MenuItem>
-      <MenuItem eventKey="2" href={props.aggregation.url.replace('/aggregate', '/aggregate.xls')}>Excel</MenuItem>
+    <DropdownButton
+      id="download-dropdownbutton"
+      bsSize="large"
+      title={<Glyphicon glyph="download" />}
+      bsStyle="link"
+    >
+      <MenuItem
+        eventKey="1"
+        href={props.aggregation.url.replace("/aggregate", "/aggregate.csv")}
+      >
+        CSV
+      </MenuItem>
+      <MenuItem
+        eventKey="2"
+        href={props.aggregation.url.replace("/aggregate", "/aggregate.xls")}
+      >
+        Excel
+      </MenuItem>
     </DropdownButton>
   );
 }
 
 function SortDirection(props) {
   const { columnIndex, sortIndex, sortAscending } = props;
-  if (columnIndex !== sortIndex)
-    return null;
+  if (columnIndex !== sortIndex) return null;
   else {
-    return (<Glyphicon glyph={"triangle-" + (sortAscending ? 'top' : 'bottom')} />);
+    return (
+      <Glyphicon glyph={"triangle-" + (sortAscending ? "top" : "bottom")} />
+    );
   }
 }
 
@@ -33,35 +61,39 @@ function DataTable(props) {
     return (
       <Grid>
         <Row>
-          <Col md={12}><p>No Data</p></Col>
+          <Col md={12}>
+            <p>No Data</p>
+          </Col>
         </Row>
       </Grid>
     );
   }
 
   const agg = aggregation.tidy();
+  console.log("TIDY", agg);
   const cntDims = agg.axes.length;
   const activePage = dataTable.page;
-  const pager = (agg.data.length > PAGE_SIZE ) ?
-                <Pagination
-                    ellipsis
-                    boundaryLinks
-                    maxButtons={5}
-                    bsSize="small"
-                    items={Math.floor(agg.data.length / PAGE_SIZE) }
-                    activePage={activePage}
-                    onSelect={(eventKey) => dispatch(setPage(eventKey)) } /> : null;
+  const pager =
+    agg.data.length > PAGE_SIZE ? (
+      <Pagination
+        ellipsis
+        boundaryLinks
+        maxButtons={5}
+        bsSize="small"
+        items={Math.floor(agg.data.length / PAGE_SIZE)}
+        activePage={activePage}
+        onSelect={eventKey => dispatch(setPage(eventKey))}
+      />
+    ) : null;
 
   function sortData(data) {
-    if (dataTable.sortIndex === null)
-      return data;
+    if (dataTable.sortIndex === null) return data;
 
     var sortAccessor;
 
     if (dataTable.sortIndex < cntDims) {
-      sortAccessor = d => d[dataTable.sortIndex]['caption'];
-    }
-    else {
+      sortAccessor = d => d[dataTable.sortIndex]["caption"];
+    } else {
       sortAccessor = d => d[dataTable.sortIndex];
     }
 
@@ -74,10 +106,8 @@ function DataTable(props) {
   return (
     <Grid>
       <Row>
-        <Col md={10}>
-          {pager}
-        </Col>
-        <Col md={1} mdOffset={1} style={{textAlign: 'right'}}>
+        <Col md={10}>{pager}</Col>
+        <Col md={1} mdOffset={1} style={{ textAlign: "right" }}>
           <DownloadMenu aggregation={aggregation} />
         </Col>
       </Row>
@@ -86,46 +116,63 @@ function DataTable(props) {
           <Table responsive striped bordered condensed hover>
             <thead>
               <tr>
-                {agg.axes.map((a,i) =>
-                  <th key={i}
-                      onClick={() => dispatch(sortToggle(i))}>{a.caption} / {a.level} <SortDirection columnIndex={i} sortIndex={dataTable.sortIndex} sortAscending={dataTable.sortAscending} /></th>
-                 )}
-                {agg.measures.map((m,i) =>
-                  <th className="measureCell"
-                      key={i}
-                      onClick={() => dispatch(sortToggle(cntDims + i))}>{m.caption} <SortDirection columnIndex={cntDims + i} sortIndex={dataTable.sortIndex} sortAscending={dataTable.sortAscending} /></th>
-                 )}
+                {agg.axes.map((a, i) => (
+                  <th key={i} onClick={() => dispatch(sortToggle(i))}>
+                    {a.caption} / {a.level}{" "}
+                    <SortDirection
+                      columnIndex={i}
+                      sortIndex={dataTable.sortIndex}
+                      sortAscending={dataTable.sortAscending}
+                    />
+                  </th>
+                ))}
+                {agg.measures.map((m, i) => (
+                  <th
+                    className="measureCell"
+                    key={i}
+                    onClick={() => dispatch(sortToggle(cntDims + i))}
+                  >
+                    {m.caption}{" "}
+                    <SortDirection
+                      columnIndex={cntDims + i}
+                      sortIndex={dataTable.sortIndex}
+                      sortAscending={dataTable.sortAscending}
+                    />
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
-              {sortData(agg.data).slice((activePage - 1) * PAGE_SIZE,
-                                        (activePage - 1) * PAGE_SIZE + PAGE_SIZE)
-                                 .map((row, i) => (
-                                   <tr key={i}>
-                                     {
-                                       row.map((cell, j) =>
-                                         <td key={j} className={j >= cntDims ? 'measureCell' : ''}>
-                                           {j < cntDims ? cell.caption : (typeof(cell) === 'number' ? cell.toLocaleString() : cell)}
-                                         </td>)
-                                     }
-                                   </tr>
-                                 ))}
+              {sortData(agg.data)
+                .slice(
+                  (activePage - 1) * PAGE_SIZE,
+                  (activePage - 1) * PAGE_SIZE + PAGE_SIZE
+                )
+                .map((row, i) => (
+                  <tr key={i}>
+                    {row.map((cell, j) => (
+                      <td key={j} className={j >= cntDims ? "measureCell" : ""}>
+                        {j < cntDims
+                          ? cell.caption
+                          : typeof cell === "number"
+                            ? cell.toLocaleString()
+                            : cell}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
             </tbody>
           </Table>
         </Col>
       </Row>
       <Row>
-        <Col md={12}>
-          {pager}
-        </Col>
+        <Col md={12}>{pager}</Col>
       </Row>
     </Grid>
   );
 }
 
-export default connect(state => (
-    {
-        aggregation: state.aggregation.present.data,
-        dataTable: state.dataTable
-    }
-))(DataTable)
+export default connect(state => ({
+  aggregation: state.aggregation.present.data,
+  dataTable: state.dataTable
+}))(DataTable);
