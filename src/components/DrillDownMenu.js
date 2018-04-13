@@ -7,8 +7,8 @@ import "../css/DrillDownMenu.css";
 
 import { HierarchyComponent } from "./HierarchyComponent";
 
-export default function DrillDownMenu(props, context) {
-  const { cube, drillDowns, dispatch } = props,
+export default function DrillDownMenu(props) {
+  const { cube, dispatch } = props,
     dimensions = cube ? cube.dimensions : [];
 
   return (
