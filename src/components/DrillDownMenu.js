@@ -5,8 +5,10 @@ import { DropdownButton } from "react-bootstrap";
 import { addDrilldown } from "../redux/reducers/aggregation";
 import "../css/DrillDownMenu.css";
 
-export default function DrillDownMenu(props, context) {
-  const { cube, drillDowns, dispatch } = props,
+import { HierarchyComponent } from "./HierarchyComponent";
+
+export default function DrillDownMenu(props) {
+  const { cube, dispatch } = props,
     dimensions = cube ? cube.dimensions : [];
 
   return (
@@ -20,17 +22,14 @@ export default function DrillDownMenu(props, context) {
       {dimensions.map((d, i) => (
         <li key={i} className="dropdown-submenu">
           <a tabIndex="-1">{d.name}</a>
-          <ul className="dropdown-menu">
-            {d.hierarchies[0].levels
-              .slice(d.hierarchies[0].allMemberName ? 1 : 0)
-              .map((l, j) => (
-                <li key={`${i}.${j}`} onClick={() => dispatch(addDrilldown(l))}>
-                  <a tabIndex="-1">
-                    {drillDowns.find(dd => dd === l) ? "✓ " : " "}
-                    {l.name}
-                  </a>
-                </li>
-              ))}
+          <ul className="dropdown-menu" key={d.name}>
+            {d.hierarchies.map((hierarchy, hIdx) => (
+              <HierarchyComponent
+                hierarchy={hierarchy}
+                key={hIdx}
+                clickEvent={level => dispatch(addDrilldown(level))}
+              />
+            ))}
           </ul>
         </li>
       ))}
