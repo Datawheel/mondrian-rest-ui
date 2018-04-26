@@ -12,7 +12,7 @@
   "dependencies": {
     "@react-bootstrap/pagination": "^1.0.0",
     "lodash": "^4.14.1",
-    "mondrian-rest-client": "^0.1.2",
+    "mondrian-rest-client": "^1.0.0",
     "prop-types": "^15.6.0",
     "react": "^16.2.0",
     "react-bootstrap": "^0.32.1",
