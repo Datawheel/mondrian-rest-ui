@@ -4,6 +4,7 @@ import { DropdownButton } from "react-bootstrap";
 
 import { showCutModal } from "../redux/reducers/cutModal";
 import "../css/DrillDownMenu.css";
+import { HierarchyComponent } from "./HierarchyComponent";
 
 export default function CutMenu(props, context) {
   const { cube } = props,
@@ -21,14 +22,14 @@ export default function CutMenu(props, context) {
       {dimensions.map((d, i) => (
         <li key={i} className="dropdown-submenu">
           <a tabIndex="-1">{d.name}</a>
-          <ul className="dropdown-menu">
-            {d.hierarchies[0].levels
-              .slice(d.hierarchies[0].allMemberName ? 1 : 0)
-              .map((l, j) => (
-                <li key={`${i}.${j}`} onClick={() => dispatch(showCutModal(l))}>
-                  <a tabIndex="-1">{l.name}</a>
-                </li>
-              ))}
+          <ul className="dropdown-menu" key={d.name}>
+            {d.hierarchies.map((hierarchy, hIdx) => (
+              <HierarchyComponent
+                hierarchy={hierarchy}
+                key={hIdx}
+                clickEvent={level => dispatch(showCutModal(level))}
+              />
+            ))}
           </ul>
         </li>
       ))}
