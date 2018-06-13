@@ -27,7 +27,7 @@ class CutModal extends Component {
       selectedMembers: members.filter(m =>
         // (make linter shut up about the ==)
         // eslint-disable-next-line
-        options.find(sm => sm.value == m.key)
+        options.find(sm => sm.value == m.key.toString())
       )
     });
   }
