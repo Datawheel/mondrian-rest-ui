@@ -20,8 +20,9 @@ class CutModal extends Component {
     };
   }
 
-  onMembersChange(options) {
+  onMembersChange = event => {
     const { members } = this.props.cutModal;
+    const options = Array.prototype.slice.call(event.target.selectedOptions);
 
     this.setState({
       selectedMembers: members.filter(m =>
@@ -30,21 +31,21 @@ class CutModal extends Component {
         options.find(sm => sm.value == m.key.toString())
       )
     });
-  }
+  };
 
-  onCutSet() {
+  onCutSet = () => {
     this.props.dispatch(
       setCut(this.state.selectedMembers, this.props.cutModal.level)
     );
     this.onHide();
-  }
+  };
 
-  onHide() {
+  onHide = () => {
     this.props.dispatch(hideCutModal());
     this.setState({
       selectedMembers: []
     });
-  }
+  };
 
   componentWillReceiveProps(nextProps) {
     if (!nextProps.cutModal.level) return;
@@ -63,7 +64,7 @@ class CutModal extends Component {
     if (!visible) return null;
 
     return (
-      <Modal show={visible} onHide={this.onHide.bind(this)}>
+      <Modal show={visible} onHide={this.onHide}>
         <Modal.Header>
           <Modal.Title>
             Cut by {level.hierarchy.dimension.caption}.{level.caption}
@@ -78,11 +79,7 @@ class CutModal extends Component {
                 multiple
                 size="10"
                 value={this.state.selectedMembers.map(sm => sm.key)}
-                onChange={e =>
-                  this.onMembersChange.bind(this)(
-                    Array.prototype.slice.call(e.target.selectedOptions)
-                  )
-                }
+                onChange={this.onMembersChange}
               >
                 {members.map(m => (
                   <option key={m.key} value={m.key}>
@@ -91,7 +88,7 @@ class CutModal extends Component {
                 ))}
               </FormControl>
             </FormGroup>
-            <Button onClick={this.onCutSet.bind(this)}>Submit</Button>
+            <Button onClick={this.onCutSet}>Submit</Button>
             <Button>Clear</Button>
           </form>
         </Modal.Body>
