@@ -91,10 +91,9 @@ function DataTable(props) {
     var sortAccessor;
 
     if (dataTable.sortIndex < cntDims) {
-      sortAccessor = d => d[dataTable.sortIndex];
-
-      if (typeof sortAccessor !== "undefined") {
-        sortAccessor = sortAccessor["caption"];
+      sortAccessor = d => {
+        const accessor = d[dataTable.sortIndex];
+        return accessor ? accessor["caption"] : accessor;
       }
     } else {
       sortAccessor = d => d[dataTable.sortIndex];
