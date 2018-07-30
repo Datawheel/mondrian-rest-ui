@@ -152,7 +152,9 @@ function DataTable(props) {
                     {row.map((cell, j) => (
                       <td key={j} className={j >= cntDims ? "measureCell" : ""}>
                         {j < cntDims
-                          ? cell.caption
+                          ? typeof cell === "undefined"
+                            ? ""
+                            : cell.caption
                           : typeof cell === "number"
                             ? cell.toLocaleString()
                             : cell}
