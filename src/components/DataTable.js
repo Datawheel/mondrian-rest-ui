@@ -91,7 +91,10 @@ function DataTable(props) {
     var sortAccessor;
 
     if (dataTable.sortIndex < cntDims) {
-      sortAccessor = d => d[dataTable.sortIndex]["caption"];
+      sortAccessor = d => {
+        const accessor = d[dataTable.sortIndex];
+        return accessor ? accessor["caption"] : accessor;
+      }
     } else {
       sortAccessor = d => d[dataTable.sortIndex];
     }
@@ -152,7 +155,9 @@ function DataTable(props) {
                     {row.map((cell, j) => (
                       <td key={j} className={j >= cntDims ? "measureCell" : ""}>
                         {j < cntDims
-                          ? cell.caption
+                          ? typeof cell === "undefined"
+                            ? ""
+                            : cell.caption
                           : typeof cell === "number"
                             ? cell.toLocaleString()
                             : cell}
