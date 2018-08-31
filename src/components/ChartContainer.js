@@ -18,7 +18,6 @@ import fromPairs from "lodash/fromPairs";
 import keys from "lodash/keys";
 
 import vegaEmbed from "vega-embed";
-import { vegaLite as vlTooltip } from "vega-tooltip";
 
 import {
   setSpecField,
@@ -286,9 +285,6 @@ class Chart extends Component {
       vls,
       {
         mode: "vega-lite"
-      },
-      (error, result) => {
-        vlTooltip(result.view, vls, {});
       }
     );
   }
