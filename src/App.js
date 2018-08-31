@@ -45,7 +45,7 @@ function getLevel(cube, dimName, hierName, lvlName) {
 }
 
 class App extends Component {
-  hashChange() {
+  hashChange = () => {
     const urlState = getAggregationParams();
 
     if (urlState === null) {

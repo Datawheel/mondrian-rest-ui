@@ -79,7 +79,7 @@ function DataTable(props) {
         boundaryLinks
         maxButtons={5}
         bsSize="small"
-        items={Math.floor(agg.data.length / PAGE_SIZE)}
+        items={Math.ceil(agg.data.length / PAGE_SIZE)}
         activePage={activePage}
         onSelect={eventKey => dispatch(setPage(eventKey))}
       />
