@@ -42,7 +42,35 @@ function ClientCodeExample(props) {
 }
 
 function DebugModal(props) {
-  const { data } = props.aggregation;
+  const { cuts, data, drillDowns, measures } = props.aggregation;
+  let logiclayer = {
+    drilldowns: null,
+    measures: null
+  };
+
+  measures &&
+    Object.keys(measures).length > 0 &&
+    (logiclayer.measures = Object.keys(measures).join());
+
+  drillDowns &&
+    drillDowns.length > 0 &&
+    (logiclayer.drilldowns = drillDowns.map(d => d.name).join());
+
+  if (cuts && Object.keys(cuts).length > 0) {
+    Object.keys(cuts).map(key => {
+      const name = cuts[key].level.name;
+      const members = cuts[key].cutMembers.map(h => h.name).join();
+      logiclayer[name] = members;
+    });
+  }
+
+  logiclayer = Object.keys(logiclayer)
+    .reduce((all, d) => {
+      if (logiclayer[d]) all.push(d + "=" + logiclayer[d]);
+      return all;
+    }, [])
+    .join("&");
+
   return (
     <Modal
       show={props.modal.visible}
@@ -68,6 +96,16 @@ function DebugModal(props) {
                 </a>
               </div>
             ) : null}
+          </FormGroup>
+
+          <FormGroup>
+            <ControlLabel>LOGICLAYER URL</ControlLabel>
+            <FormControl
+              type="text"
+              value={data ? "/api/data?" + logiclayer : ""}
+              readOnly
+              style={{ fontFamily: "monospace", fontSize: "12px" }}
+            />
           </FormGroup>
           <FormGroup>
             <ControlLabel>
