@@ -59,7 +59,7 @@ function DebugModal(props) {
   if (cuts && Object.keys(cuts).length > 0) {
     Object.keys(cuts).map(key => {
       const name = cuts[key].level.name;
-      const members = cuts[key].cutMembers.map(h => h.name).join();
+      const members = cuts[key].cutMembers.map(h => h.key).join();
       logiclayer[name] = members;
     });
   }
